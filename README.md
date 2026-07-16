@@ -101,6 +101,26 @@ python scripts/list_workspaces.py \
 
 ---
 
+WorkBuddy 示例
+1. 新建会话，上传技能/选择技能
+[`01-技能选择.png`](doc/images/workbuddy/01-技能选择.png)
+
+上传后，选择 maxkb-v2-skills
+
+2. 简单提需求/精确需求/上传架构图/PRD图
+如果是模糊的需求，会引导你逐步确定你的想法
+[`02-需求分析.png`](doc/images/workbuddy/02-需求分析.png)
+
+3. 使用
+[`03-问询式获取信息.png`](doc/images/workbuddy/03-问询式获取信息.png)
+
+[`04-入库.png`](doc/images/workbuddy/04-入库.png)
+
+可以把word、pdf等直接传给ai让他帮你分段入库，也可以直接帮你上传/做工作流知识库。
+
+
+---
+
 ## 安全与责任
 
 - 请使用 **普通用户** API Key，不要用管理员/超管 Key。  
