@@ -116,6 +116,7 @@ WorkBuddy 示例
 
 [`04-入库.png`](doc/images/workbuddy/04-入库.png)
 
+[`05-简单工作流示例.png`](doc/images/workbuddy/05-简单工作流示例.png)
 可以把word、pdf等直接传给ai让他帮你分段入库，也可以直接帮你上传/做工作流知识库。
 
 
