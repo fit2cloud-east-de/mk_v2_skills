@@ -9,8 +9,6 @@
 
 ## 架构总览
 
-导出图（阿里巴巴普惠体）如下；HTML 源文件保留且未写入字体引用。
-
 ![mk_v2_skills 业务架构](docs/images/architecture/overview.png)
 
 可编辑源文件：[`docs/images/architecture/overview.html`](docs/images/architecture/overview.html)（未写入字体引用；导出时临时注入普惠体）。
