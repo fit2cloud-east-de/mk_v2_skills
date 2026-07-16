@@ -101,24 +101,29 @@ python scripts/list_workspaces.py \
 
 ---
 
-WorkBuddy 示例
-1. 新建会话，上传技能/选择技能
-[`01-技能选择.png`](doc/images/workbuddy/01-技能选择.png)
+## WorkBuddy 示例
 
-上传后，选择 maxkb-v2-skills
+1. **新建会话，上传/选择技能**
 
-2. 简单提需求/精确需求/上传架构图/PRD图
-如果是模糊的需求，会引导你逐步确定你的想法
-[`02-需求分析.png`](doc/images/workbuddy/02-需求分析.png)
+![01-技能选择](docs/images/workbuddy/01-技能选择.png)
 
-3. 使用
-[`03-问询式获取信息.png`](doc/images/workbuddy/03-问询式获取信息.png)
+上传后，选择 `maxkb-v2-skills`（或本套件目录名）。
 
-[`04-入库.png`](doc/images/workbuddy/04-入库.png)
+2. **提出需求**（可模糊、可精确，也可上传架构图/PRD）
 
-[`05-简单工作流示例.png`](doc/images/workbuddy/05-简单工作流示例.png)
-可以把word、pdf等直接传给ai让他帮你分段入库，也可以直接帮你上传/做工作流知识库。
+模糊需求时，助手会引导你逐步澄清想法：
 
+![02-需求分析](docs/images/workbuddy/02-需求分析.png)
+
+3. **使用过程**
+
+![03-问询式获取信息](docs/images/workbuddy/03-问询式获取信息.png)
+
+![04-入库](docs/images/workbuddy/04-入库.png)
+
+![05-简单工作流示例](docs/images/workbuddy/05-简单工作流示例.png)
+
+可以把 Word、PDF 等直接交给助手做分段入库，也可协助上传/编排工作流知识库。
 
 ---
 
