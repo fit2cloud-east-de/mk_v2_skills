@@ -1,0 +1,9 @@
+.venv311/
+.venv/
+# 禁止本地隐式配置；若误建也不要提交
+.env
+*.env
+scripts/.env
+__pycache__/
+*.pyc
+.pytest_cache/
