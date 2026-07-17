@@ -53,9 +53,9 @@
         "properties": {
           "stepName": "基本信息",
           "node_data": {
-            "name": "拓扑-流水线多智能体",
+            "name": "[拓扑审核] 19-agent-sequential",
             "desc": "",
-            "prologue": "你好",
+            "prologue": "你好，我是「流水线多智能体助手」。\n多专职 Agent 串行流转：检索→分析→写作→审核。\n\n你可以这样问我：\n- 按检索→分析→写作→审核生成一篇产品介绍\n- 流水线产出一份客服话术并质检",
             "tts_type": "BROWSER",
             "file_upload_enable": false
           },
@@ -100,13 +100,13 @@
         "x": 500,
         "y": 300,
         "properties": {
-          "stepName": "检索Agent",
+          "stepName": "检索智能体",
           "condition": "AND",
           "config": {
             "fields": [
               {
-                "label": "回答",
-                "value": "answer"
+                "label": "结果",
+                "value": "result"
               }
             ]
           },
@@ -128,13 +128,13 @@
         "x": 500,
         "y": 300,
         "properties": {
-          "stepName": "分析Agent",
+          "stepName": "分析智能体",
           "condition": "AND",
           "config": {
             "fields": [
               {
-                "label": "回答",
-                "value": "answer"
+                "label": "结果",
+                "value": "result"
               }
             ]
           },
@@ -156,13 +156,13 @@
         "x": 500,
         "y": 300,
         "properties": {
-          "stepName": "写作Agent",
+          "stepName": "写作智能体",
           "condition": "AND",
           "config": {
             "fields": [
               {
-                "label": "回答",
-                "value": "answer"
+                "label": "结果",
+                "value": "result"
               }
             ]
           },
@@ -184,13 +184,13 @@
         "x": 500,
         "y": 300,
         "properties": {
-          "stepName": "审核Agent",
+          "stepName": "审核智能体",
           "condition": "AND",
           "config": {
             "fields": [
               {
-                "label": "回答",
-                "value": "answer"
+                "label": "结果",
+                "value": "result"
               }
             ]
           },
@@ -215,7 +215,7 @@
           "stepName": "流水线产出",
           "node_data": {
             "reply_type": "content",
-            "content": "{{审核Agent.answer}}",
+            "content": "{{审核智能体.result}}",
             "is_result": true
           }
         }

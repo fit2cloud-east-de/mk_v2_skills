@@ -58,7 +58,7 @@
 | 17 | **Throttle 资源限流** | 控制并行/并发数量，避免工具超限 | 批量处理控并发、API 配额受限 | [17-throttle](maxkb_func/maxkb-v2-workflow/topology-samples/17-throttle.md) |
 | 18 | **Delegation 委派** | 主 Agent 拆任务，委派专用子 Agent，返回后汇总 | 主从专家协作、多角色分工 | [18-delegation](maxkb_func/maxkb-v2-workflow/topology-samples/18-delegation.md) |
 | 19 | **Agent Sequential 流水线** | 多专职 Agent 串行流转 | 检索 → 分析 → 写作 → 审核 | [19-agent-sequential](maxkb_func/maxkb-v2-workflow/topology-samples/19-agent-sequential.md) |
-| 20 | **Memory Feedback 记忆回流** | 输出写入记忆，下轮读取再参与推理 | 多轮会话记忆、长期偏好回流 | [20-memory-feedback](maxkb_func/maxkb-v2-workflow/topology-samples/20-memory-feedback.md) |
+| 20 | **Memory Feedback 记忆回流** | 独立记忆写入再读出参与推理（`{{开始.memory}}`） | 偏好/事实沉淀；勿与聊天记录、节点历史轮次混淆 | [20-memory-feedback](maxkb_func/maxkb-v2-workflow/topology-samples/20-memory-feedback.md) |
 
 ### 拓扑与 MaxKB 节点对照（速查）
 

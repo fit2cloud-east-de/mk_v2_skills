@@ -53,9 +53,9 @@ MaxKB 默认边连接即为串行；一源一下游即可。
         "properties": {
           "stepName": "基本信息",
           "node_data": {
-            "name": "拓扑-串行Sequential",
+            "name": "[拓扑审核] 01-sequential",
             "desc": "",
-            "prologue": "你好",
+            "prologue": "你好，我是「串行问答助手」。\n节点按固定顺序依次执行，前一步输出作为后一步输入。\n\n你可以这样问我：\n- 公司年假最长可以请几天？\n- 报销需要提交哪些材料？",
             "tts_type": "BROWSER",
             "file_upload_enable": false
           },

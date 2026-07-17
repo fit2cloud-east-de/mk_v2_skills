@@ -28,7 +28,7 @@
 | [17-throttle.md](17-throttle.md) | Throttle 资源限流 | 控制并行/并发数量，避免工具超限；常见为「批内有限并行 + 批间串行」。 |
 | [18-delegation.md](18-delegation.md) | Delegation 委派/委托 | 主 Agent 拆任务，委派专用子 Agent，等待返回后汇总。 |
 | [19-agent-sequential.md](19-agent-sequential.md) | Agent Sequential 流水线多智能体 | 多专职 Agent 串行流转：检索→分析→写作→审核。 |
-| [20-memory-feedback.md](20-memory-feedback.md) | Memory Feedback 记忆回流 | 输出写入记忆，下轮读取再参与推理；需区分 session 与长期记忆。 |
+| [20-memory-feedback.md](20-memory-feedback.md) | Memory Feedback 记忆回流 | 独立记忆（`memory`）写入再读出参与推理；**≠** `history_context` 聊天记录，**≠** 节点 `dialogue_number`。 |
 
 ## 分 md 固定结构
 
@@ -44,7 +44,8 @@
 1. 用户要「做智能体」时，先按用途/场景在本表选型（或路径 A 头脑风暴时引用本目录）。
 2. 打开对应分 md，复制 `work_flow` JSON，替换 `{{MODEL_ID}}` / `{{KNOWLEDGE_ID}}` / 子应用 ID，并**按提示词规范补全每个 AI 节点**。
 3. 用 `save_workflow.py --workflow-json ...` 写入应用，再 `debug_chat` 验证。
-4. 并行/汇聚务必设置边 `properties.condition`；循环务必设 `max_loop_count`。
+4. 并行/汇聚务必设置边 `properties.condition`；循环务必设 `max_loop_count`，且 **`loop-node.node_data.loop_body` 不可为空**（至少含 `loop-start-node`）。  
+5. **提示词/回复变量用界面节点名**：`{{循环开始.item}}`、`{{拆成列表.answer}}`；禁止 `{{loop.item}}`（易报 `loop is undefined`）。详见 [nodes-reference.md](../nodes-reference.md)。
 
 ## 与 MaxKB 节点对照（速查）
 

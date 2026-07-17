@@ -53,9 +53,9 @@
         "properties": {
           "stepName": "基本信息",
           "node_data": {
-            "name": "拓扑-并行Parallel",
+            "name": "[拓扑审核] 02-parallel",
             "desc": "",
-            "prologue": "你好",
+            "prologue": "你好，我是「并行多视角助手」。\n同一上游扇出到多个下游同时执行，再汇合。\n\n你可以这样问我：\n- 请同时摘要并提取这篇文章的关键词：……\n- 从风险与收益两个角度分析这个方案",
             "tts_type": "BROWSER",
             "file_upload_enable": false
           },

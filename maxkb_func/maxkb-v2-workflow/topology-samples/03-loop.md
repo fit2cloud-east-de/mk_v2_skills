@@ -13,8 +13,10 @@
 ## 要点
 
 - 必须设置 max_loop_count
+- 循环体内引用用 `{{循环开始.item}}` / `{{循环开始.index}}`（界面名），**禁止** `{{loop.item}}`（会报 loop is undefined）
+- 外层用 `{{拆成列表.answer}}`、`{{逐步执行循环.result}}`、`{{汇总循环结果.answer}}` 等界面节点名
 - 循环体内可配 loop-break / continue
-- 循环变量与数组引用地址要正确
+- 循环变量与数组引用地址要正确（参数里的 array 用节点 id）
 
 ## 用途（一句话）
 
@@ -53,9 +55,9 @@
         "properties": {
           "stepName": "基本信息",
           "node_data": {
-            "name": "拓扑-循环Loop",
+            "name": "[拓扑审核] 03-loop",
             "desc": "",
-            "prologue": "你好",
+            "prologue": "你好，我是「循环逐步执行助手」。\n对数组/次数重复执行同一子流程，可用 break/continue。\n\n你可以这样问我：\n- 把下面任务拆成步骤并逐步执行：整理本周例会纪要并分发\n- 逐条处理这 3 个工单：……",
             "tts_type": "BROWSER",
             "file_upload_enable": false
           },
@@ -136,13 +138,87 @@
         "properties": {
           "stepName": "逐步执行循环",
           "node_data": {
-            "loop_type": "array",
+            "loop_type": "ARRAY",
             "array_reference_address": [
-              "start-node",
-              "question"
+              "n-plan-items",
+              "answer"
             ],
             "max_loop_count": 5,
-            "note": "MaxKB 循环体内部再挂 loop-start / ai-chat / tool / loop-break；此处为拓扑示意"
+            "note": "循环体内用界面节点名引用，如 {{循环开始.item}}；勿写 {{loop.item}}（易报 loop is undefined）。array 引用拆成列表.answer。",
+            "array": [
+              "n-plan-items",
+              "answer"
+            ],
+            "number": 1,
+            "loop_body": {
+              "nodes": [
+                {
+                  "id": "loop-start-node",
+                  "type": "loop-start-node",
+                  "x": 480,
+                  "y": 3340,
+                  "properties": {
+                    "stepName": "循环开始",
+                    "showNode": true,
+                    "config": {
+                      "fields": [
+                        {
+                          "label": "index",
+                          "value": "index"
+                        },
+                        {
+                          "label": "item",
+                          "value": "item"
+                        }
+                      ],
+                      "globalFields": []
+                    }
+                  }
+                },
+                {
+                  "id": "loop-inner-reply",
+                  "type": "reply-node",
+                  "x": 780,
+                  "y": 3340,
+                  "properties": {
+                    "stepName": "循环体占位",
+                    "config": {
+                      "fields": [
+                        {
+                          "label": "内容",
+                          "value": "answer"
+                        }
+                      ]
+                    },
+                    "node_data": {
+                      "reply_type": "content",
+                      "content": "【循环体占位】index={{循环开始.index}} item={{循环开始.item}}（落地时替换为真实子流程）",
+                      "is_result": true
+                    }
+                  }
+                }
+              ],
+              "edges": [
+                {
+                  "id": "e-loop-inner-1",
+                  "type": "app-edge",
+                  "sourceNodeId": "loop-start-node",
+                  "targetNodeId": "loop-inner-reply",
+                  "sourceAnchorId": "loop-start-node_right",
+                  "targetAnchorId": "loop-inner-reply_left",
+                  "startPoint": {
+                    "x": 0,
+                    "y": 0
+                  },
+                  "endPoint": {
+                    "x": 0,
+                    "y": 0
+                  },
+                  "pointsList": [],
+                  "properties": {}
+                }
+              ]
+            }
           },
           "config": {
             "fields": [
@@ -246,12 +322,13 @@
       }
     ]
   },
-  "design_notes": "JSON 中 loop 体细节需在画布/完整导出中展开；此处为骨架。",
+  "design_notes": "提示词/回复用界面节点名：{{循环开始.item}}、{{拆成列表.answer}}、{{汇总循环结果.answer}}。勿写 {{loop.item}}。array 引用用节点 id。",
   "design_thinking": "把「重复同类动作」从展开成 N 个节点改为循环体，用计数/数组驱动。设计重点是循环变量、退出条件与单次副作用是否幂等。",
   "key_points": [
     "必须设置 max_loop_count",
-    "循环体内可配 loop-break / continue",
-    "循环变量与数组引用地址要正确"
+    "循环体内引用用 {{循环开始.item}} / {{循环开始.index}}，禁止 {{loop.xxx}}",
+    "外层用 {{拆成列表.answer}}、{{逐步执行循环.result}}、{{汇总循环结果.answer}} 等界面名",
+    "循环体内可配 loop-break / continue"
   ]
 }
 ```

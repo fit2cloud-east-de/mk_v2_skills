@@ -53,9 +53,9 @@ application-node 调用子应用；或 tool-workflow-lib-node。并行委派后 
         "properties": {
           "stepName": "基本信息",
           "node_data": {
-            "name": "拓扑-委派Delegation",
+            "name": "[拓扑审核] 18-delegation",
             "desc": "",
-            "prologue": "你好",
+            "prologue": "你好，我是「委派协作助手」。\n主 Agent 拆任务，委派专用子 Agent，等待返回后汇总。\n\n你可以这样问我：\n- 把「竞品分析」拆给检索专家和分析专家后汇总\n- 委派专家协作完成一份调研摘要",
             "tts_type": "BROWSER",
             "file_upload_enable": false
           },
@@ -100,7 +100,7 @@ application-node 调用子应用；或 tool-workflow-lib-node。并行委派后 
         "x": 400,
         "y": 300,
         "properties": {
-          "stepName": "主Agent拆解",
+          "stepName": "主智能体拆解",
           "condition": "AND",
           "config": {
             "fields": [
@@ -139,8 +139,8 @@ application-node 调用子应用；或 tool-workflow-lib-node。并行委派后 
           "config": {
             "fields": [
               {
-                "label": "回答",
-                "value": "answer"
+                "label": "结果",
+                "value": "result"
               }
             ]
           },
@@ -167,8 +167,8 @@ application-node 调用子应用；或 tool-workflow-lib-node。并行委派后 
           "config": {
             "fields": [
               {
-                "label": "回答",
-                "value": "answer"
+                "label": "结果",
+                "value": "result"
               }
             ]
           },
@@ -190,7 +190,7 @@ application-node 调用子应用；或 tool-workflow-lib-node。并行委派后 
         "x": 400,
         "y": 300,
         "properties": {
-          "stepName": "主Agent汇总",
+          "stepName": "主智能体汇总",
           "condition": "AND",
           "config": {
             "fields": [
@@ -207,7 +207,7 @@ application-node 调用子应用；或 tool-workflow-lib-node。并行委派后 
           "node_data": {
             "model_id": "{{MODEL_ID}}",
             "system": "你是助手。",
-            "prompt": "检索专家：{{委派检索专家.answer}}\n分析专家：{{委派分析专家.answer}}\n汇总交付。",
+            "prompt": "检索专家：{{委派检索专家.result}}\n分析专家：{{委派分析专家.result}}\n汇总交付。",
             "dialogue_number": 1,
             "dialogue_type": "WORKFLOW",
             "is_result": true,

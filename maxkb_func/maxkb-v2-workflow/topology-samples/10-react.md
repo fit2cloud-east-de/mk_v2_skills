@@ -53,9 +53,9 @@ ai-chat(思考)+condition+tool(行动/观察)+loop；限制轮次。也可用 ai
         "properties": {
           "stepName": "基本信息",
           "node_data": {
-            "name": "拓扑-ReAct",
+            "name": "[拓扑审核] 10-react",
             "desc": "",
-            "prologue": "你好",
+            "prologue": "你好，我是「推理行动助手」。\nThought→Action→Observation 循环，直到可作答；循环与规划结合的经典范式。\n\n你可以这样问我：\n- 查一下知识库后回答：如何开通 VPN？\n- 需要工具计算：12*37 等于多少",
             "tts_type": "BROWSER",
             "file_upload_enable": false
           },
@@ -242,13 +242,87 @@ ai-chat(思考)+condition+tool(行动/观察)+loop；限制轮次。也可用 ai
         "properties": {
           "stepName": "ReAct循环",
           "node_data": {
-            "loop_type": "array",
+            "loop_type": "ARRAY",
             "array_reference_address": [
               "start-node",
               "question"
             ],
             "max_loop_count": 5,
-            "note": "MaxKB 循环体内部再挂 loop-start / ai-chat / tool / loop-break；此处为拓扑示意"
+            "note": "MaxKB 循环体内部再挂 loop-start / ai-chat / tool / loop-break；此处为拓扑示意；已含最小 loop_body（loop-start + reply 占位），落地时替换循环体内真实节点。",
+            "array": [
+              "start-node",
+              "question"
+            ],
+            "number": 1,
+            "loop_body": {
+              "nodes": [
+                {
+                  "id": "loop-start-node",
+                  "type": "loop-start-node",
+                  "x": 480,
+                  "y": 3340,
+                  "properties": {
+                    "stepName": "循环开始",
+                    "showNode": true,
+                    "config": {
+                      "fields": [
+                        {
+                          "label": "index",
+                          "value": "index"
+                        },
+                        {
+                          "label": "item",
+                          "value": "item"
+                        }
+                      ],
+                      "globalFields": []
+                    }
+                  }
+                },
+                {
+                  "id": "loop-inner-reply",
+                  "type": "reply-node",
+                  "x": 780,
+                  "y": 3340,
+                  "properties": {
+                    "stepName": "循环体占位",
+                    "config": {
+                      "fields": [
+                        {
+                          "label": "内容",
+                          "value": "answer"
+                        }
+                      ]
+                    },
+                    "node_data": {
+                      "reply_type": "content",
+                      "content": "【循环体占位】index={{循环开始.index}} item={{循环开始.item}}（落地时替换为真实子流程）",
+                      "is_result": true
+                    }
+                  }
+                }
+              ],
+              "edges": [
+                {
+                  "id": "e-loop-inner-1",
+                  "type": "app-edge",
+                  "sourceNodeId": "loop-start-node",
+                  "targetNodeId": "loop-inner-reply",
+                  "sourceAnchorId": "loop-start-node_right",
+                  "targetAnchorId": "loop-inner-reply_left",
+                  "startPoint": {
+                    "x": 0,
+                    "y": 0
+                  },
+                  "endPoint": {
+                    "x": 0,
+                    "y": 0
+                  },
+                  "pointsList": [],
+                  "properties": {}
+                }
+              ]
+            }
           },
           "config": {
             "fields": [

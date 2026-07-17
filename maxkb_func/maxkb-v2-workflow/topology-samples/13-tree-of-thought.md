@@ -53,9 +53,9 @@
         "properties": {
           "stepName": "基本信息",
           "node_data": {
-            "name": "拓扑-TreeOfThought",
+            "name": "[拓扑审核] 13-tree-of-thought",
             "desc": "",
-            "prologue": "你好",
+            "prologue": "你好，我是「思维树择优助手」。\n多分支并行推演多条解题路径，再择优。\n\n你可以这样问我：\n- 给出 3 种客服机器人方案并择优\n- 多路径比较：自建还是采购知识库",
             "tts_type": "BROWSER",
             "file_upload_enable": false
           },

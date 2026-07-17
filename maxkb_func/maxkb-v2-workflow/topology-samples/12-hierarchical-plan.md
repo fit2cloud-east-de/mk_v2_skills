@@ -53,9 +53,9 @@
         "properties": {
           "stepName": "基本信息",
           "node_data": {
-            "name": "拓扑-分层规划",
+            "name": "[拓扑审核] 12-hierarchical-plan",
             "desc": "",
-            "prologue": "你好",
+            "prologue": "你好，我是「分层规划助手」。\n顶层总规划→中层子任务→底层工具执行，多级拆解。\n\n你可以这样问我：\n- 写一篇关于知识库落地的大纲并拆子任务\n- 把软件发版拆成顶层计划与执行项",
             "tts_type": "BROWSER",
             "file_upload_enable": false
           },
@@ -170,13 +170,87 @@
         "properties": {
           "stepName": "底层工具执行循环",
           "node_data": {
-            "loop_type": "array",
+            "loop_type": "ARRAY",
             "array_reference_address": [
               "start-node",
               "question"
             ],
             "max_loop_count": 5,
-            "note": "MaxKB 循环体内部再挂 loop-start / ai-chat / tool / loop-break；此处为拓扑示意"
+            "note": "MaxKB 循环体内部再挂 loop-start / ai-chat / tool / loop-break；此处为拓扑示意；已含最小 loop_body（loop-start + reply 占位），落地时替换循环体内真实节点。",
+            "array": [
+              "start-node",
+              "question"
+            ],
+            "number": 1,
+            "loop_body": {
+              "nodes": [
+                {
+                  "id": "loop-start-node",
+                  "type": "loop-start-node",
+                  "x": 480,
+                  "y": 3340,
+                  "properties": {
+                    "stepName": "循环开始",
+                    "showNode": true,
+                    "config": {
+                      "fields": [
+                        {
+                          "label": "index",
+                          "value": "index"
+                        },
+                        {
+                          "label": "item",
+                          "value": "item"
+                        }
+                      ],
+                      "globalFields": []
+                    }
+                  }
+                },
+                {
+                  "id": "loop-inner-reply",
+                  "type": "reply-node",
+                  "x": 780,
+                  "y": 3340,
+                  "properties": {
+                    "stepName": "循环体占位",
+                    "config": {
+                      "fields": [
+                        {
+                          "label": "内容",
+                          "value": "answer"
+                        }
+                      ]
+                    },
+                    "node_data": {
+                      "reply_type": "content",
+                      "content": "【循环体占位】index={{循环开始.index}} item={{循环开始.item}}（落地时替换为真实子流程）",
+                      "is_result": true
+                    }
+                  }
+                }
+              ],
+              "edges": [
+                {
+                  "id": "e-loop-inner-1",
+                  "type": "app-edge",
+                  "sourceNodeId": "loop-start-node",
+                  "targetNodeId": "loop-inner-reply",
+                  "sourceAnchorId": "loop-start-node_right",
+                  "targetAnchorId": "loop-inner-reply_left",
+                  "startPoint": {
+                    "x": 0,
+                    "y": 0
+                  },
+                  "endPoint": {
+                    "x": 0,
+                    "y": 0
+                  },
+                  "pointsList": [],
+                  "properties": {}
+                }
+              ]
+            }
           },
           "config": {
             "fields": [

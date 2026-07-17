@@ -59,7 +59,55 @@
 }
 ```
 
-运行时上下文：`question`, `document`, `image`, `audio`, `video`, `other`, `memory`；全局还有 `chat_user_id`, `chat_user_type`, `chat_user`, `chat_user_group` 等。
+运行时上下文：`question`, `document`, `image`, `audio`, `video`, `other`；开启长期记忆后另有 **`memory`**。全局还有 `chat_user_id`, `chat_user_type`, `chat_user`, `chat_user_group` 等。
+
+### 模板变量引用（强制：用界面节点名）
+
+提示词 / 回复内容里的 `{{...}}` **必须使用画布上的节点名称（`stepName`）+ 字段名**，不要写节点 id，也不要写不存在的命名空间。
+
+| 正确 | 错误 | 说明 |
+|------|------|------|
+| `{{开始.question}}` | `{{start-node.question}}` | 开始节点界面名是「开始」 |
+| `{{拆成列表.answer}}` | `{{n-plan-items.answer}}` | 用 stepName |
+| `{{汇总循环结果.answer}}` | — | 下游引用上游 AI 输出 |
+| `{{逐步执行循环.result}}` | — | 引用循环节点输出 |
+| `{{循环开始.item}}` / `{{循环开始.index}}` | `{{loop.item}}` / `{{loop.index}}` | 循环体内引用循环开始字段；`{{loop.xxx}}` 在未做特殊替换时会报 **`loop is undefined`** |
+| `{{审核智能体.result}}` | `{{审核Agent.answer}}` / `{{审核Agent.result}}` | **应用节点**官方输出字段是 `result`；节点名用界面 `stepName`（建议中文，如「审核智能体」） |
+
+补充：
+
+- **表单/节点参数里的引用数组**（如 `"array": ["n-plan-items","answer"]`）存的是 **节点 id + 字段**，与提示词里的 `{{stepName.字段}}` 不是同一套写法。  
+- `{{global.xxx}}` / `{{global.history_context}}` 仅用于全局变量；聊天记录 ≠ 长期记忆。  
+- `{{loop.xxx}}` 只对「循环开始」里自定义的 `loop_input_field_list` 在部分路径有效；**内置 index/item 请一律写 `{{循环开始.index}}` / `{{循环开始.item}}`**。
+
+### 历史记录 vs 节点历史轮次 vs 长期/会话记忆（勿混用）
+
+这三者在 MaxKB 界面与变量上**不是一回事**：
+
+| 概念 | 界面位置 | 变量 / 字段 | 含义 |
+|------|----------|-------------|------|
+| **历史聊天记录** | 开始节点全局变量 | `{{开始.history_context}}` 或 `{{global.history_context}}` | 本会话里**已经聊过的对话流水**（聊天记录文本），供提示词里显式引用 |
+| **保留前历史聊天记录** | **每个** AI 类节点（如 `ai-chat-node`）上的数字配置 | `dialogue_number`（+ `dialogue_type`：`NODE`/`WORKFLOW`） | 调用该模型时，自动带上前 N 轮对话进上下文；**不是**独立记忆库，也不是 `history_context` 变量本身 |
+| **长期记忆（会话记忆能力）** | **基本信息**里开关/按钮（`long_term_enable`）及模型配置 | 开启后开始节点出现 **`memory`** → `{{开始.memory}}` | 平台侧独立记忆能力（写入/读取记忆条目）；**不要**用 `history_context` 冒充 |
+
+设计约束：
+
+1. 只想「多轮连贯」→ 调 AI 节点的 `dialogue_number`，或在 prompt 里引用 `history_context`；二者可并存但职责不同。  
+2. 要「跨轮沉淀偏好/事实」→ 开基本信息的长期记忆，在 prompt 用 `{{开始.memory}}`；不可写成「记忆 = history_context」。  
+3. 拓扑样本「记忆回流」指的是 **memory 能力或外置存储回流**，不是把聊天记录当记忆。
+
+### 开场白（prologue）
+
+面向用户提问的智能体，基本信息 `prologue` 应：
+
+1. **介绍本智能体**是什么、能做什么（一句话）  
+2. 给出 **2 条提问示例**，格式固定为：
+
+```text
+你可以这样问我：
+- 问题1
+- 问题2
+```
 
 ---
 
@@ -90,6 +138,8 @@
 | `image-generate-node` / `text-to-video-node` / `image-to-video-node` | 生成 | 媒体 |
 | `speech-to-text-node` / `text-to-speech-node` | STT/TTS | `result` |
 | `loop-node` (+ `loop-body-node`, `loop-start-node`, `loop-continue-node`, `loop-break-node`) | 循环 | 循环结果 |
+
+**`loop-node` 保存硬性要求**：`node_data` 必须含非空 `loop_body`（内嵌 `{nodes, edges}`，至少含 `loop-start-node`），以及 `loop_type`（`ARRAY`/`NUMBER`/`LOOP`）。`ARRAY` 时用字段 `array: [nodeId, field...]`（勿只写 `array_reference_address`）。缺少 `loop_body` 时管理端保存会报 `NoneType is not iterable`。
 
 ### search-knowledge-node 默认检索
 

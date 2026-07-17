@@ -53,9 +53,9 @@
         "properties": {
           "stepName": "基本信息",
           "node_data": {
-            "name": "拓扑-汇聚Merge",
+            "name": "[拓扑审核] 06-merge-join",
             "desc": "",
-            "prologue": "你好",
+            "prologue": "你好，我是「多源汇聚助手」。\n多条并行路径汇入同一节点，AND 全到齐 / OR 任一即可。\n\n你可以这样问我：\n- 同时查产品手册和制度库：远程办公申请怎么走？\n- 合并多来源后回答：年终奖发放时间",
             "tts_type": "BROWSER",
             "file_upload_enable": false
           },

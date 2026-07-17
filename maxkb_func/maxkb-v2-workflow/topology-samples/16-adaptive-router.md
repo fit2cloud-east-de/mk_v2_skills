@@ -53,9 +53,9 @@ ai-chat 分类 + condition-node 多出口挂接不同子拓扑。
         "properties": {
           "stepName": "基本信息",
           "node_data": {
-            "name": "拓扑-自适应路由",
+            "name": "[拓扑审核] 16-adaptive-router",
             "desc": "",
-            "prologue": "你好",
+            "prologue": "你好，我是「自适应路由助手」。\n按任务难度/资源动态选择简单串行、复杂并行或规划流程。\n\n你可以这样问我：\n- 简单问题：开场白是什么？\n- 复杂问题：对比三种拓扑并给出推荐",
             "tts_type": "BROWSER",
             "file_upload_enable": false
           },

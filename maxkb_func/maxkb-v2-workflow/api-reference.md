@@ -12,7 +12,7 @@
 | GET | `/workspace/{WS}/application/{id}` | 详情（含 `work_flow`） |
 | PUT | `/workspace/{WS}/application/{id}` | 更新（可带 `work_flow`） |
 | DELETE | `/workspace/{WS}/application/{id}` | 删除 |
-| PUT | `/workspace/{WS}/application/{id}/publish` | 发布 |
+| PUT | `/workspace/{WS}/application/{id}/publish` | 发布（skills：`publish_app.py`；支持多 id / `--name-prefix` 批量） |
 | PUT | `/workspace/{WS}/application/{id}/move/{folder_id}` | 移动 |
 | GET | `/workspace/{WS}/application/{id}/export` | 导出 `.mk` |
 | POST | `/workspace/{WS}/application/folder/{folder_id}/import` | 导入 |
@@ -25,8 +25,8 @@
 
 | Method | Path | Auth | 说明 |
 |--------|------|------|------|
-| GET | `/workspace/{WS}/application/{id}/open` | 系统 Key | 开 debug 会话 → `chat_id` |
-| POST | `/chat_message/{chat_id}` | 系统 Key | 调试对话（admin 前缀下） |
+| GET | `/workspace/{WS}/application/{id}/open` | 系统 Key | 开 debug 会话 → `chat_id`（skills：`debug_open.py` / `debug_app.py`） |
+| POST | `/chat_message/{chat_id}` | 系统 Key | 调试对话（admin 前缀下；skills：`debug_chat.py` / `debug_app.py`） |
 | POST | `{CHAT_API}/{APP_ID}/chat/completions` | 应用 Key | OpenAI 兼容 |
 | GET | `{CHAT_API}/open` | 应用 Key | 开生产会话 |
 | POST | `{CHAT_API}/chat_message/{chat_id}` | 应用 Key | 生产对话 |

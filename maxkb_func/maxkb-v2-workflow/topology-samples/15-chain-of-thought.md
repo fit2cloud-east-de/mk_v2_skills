@@ -53,9 +53,9 @@
         "properties": {
           "stepName": "基本信息",
           "node_data": {
-            "name": "拓扑-ChainOfThought",
+            "name": "[拓扑审核] 15-chain-of-thought",
             "desc": "",
-            "prologue": "你好",
+            "prologue": "你好，我是「思维链推理助手」。\n串行分步推理的轻量变种，思考步骤内嵌在同一生成中。\n\n你可以这样问我：\n- 一步步推理：为什么检索不到相关段落？\n- 分步说明如何做命中测试",
             "tts_type": "BROWSER",
             "file_upload_enable": false
           },

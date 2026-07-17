@@ -53,9 +53,9 @@
         "properties": {
           "stepName": "基本信息",
           "node_data": {
-            "name": "拓扑-限流Throttle",
+            "name": "[拓扑审核] 17-throttle",
             "desc": "",
-            "prologue": "你好",
+            "prologue": "你好，我是「限流批处理助手」。\n控制并行/并发数量，避免工具超限；常见为「批内有限并行 + 批间串行」。\n\n你可以这样问我：\n- 批量处理这 20 条工单摘要，控制并发\n- 把长列表按批处理后汇总",
             "tts_type": "BROWSER",
             "file_upload_enable": false
           },
@@ -136,13 +136,87 @@
         "properties": {
           "stepName": "按批顺序处理(限并发)",
           "node_data": {
-            "loop_type": "array",
+            "loop_type": "ARRAY",
             "array_reference_address": [
               "start-node",
               "question"
             ],
             "max_loop_count": 5,
-            "note": "MaxKB 循环体内部再挂 loop-start / ai-chat / tool / loop-break；此处为拓扑示意"
+            "note": "MaxKB 循环体内部再挂 loop-start / ai-chat / tool / loop-break；此处为拓扑示意；已含最小 loop_body（loop-start + reply 占位），落地时替换循环体内真实节点。",
+            "array": [
+              "start-node",
+              "question"
+            ],
+            "number": 1,
+            "loop_body": {
+              "nodes": [
+                {
+                  "id": "loop-start-node",
+                  "type": "loop-start-node",
+                  "x": 480,
+                  "y": 3340,
+                  "properties": {
+                    "stepName": "循环开始",
+                    "showNode": true,
+                    "config": {
+                      "fields": [
+                        {
+                          "label": "index",
+                          "value": "index"
+                        },
+                        {
+                          "label": "item",
+                          "value": "item"
+                        }
+                      ],
+                      "globalFields": []
+                    }
+                  }
+                },
+                {
+                  "id": "loop-inner-reply",
+                  "type": "reply-node",
+                  "x": 780,
+                  "y": 3340,
+                  "properties": {
+                    "stepName": "循环体占位",
+                    "config": {
+                      "fields": [
+                        {
+                          "label": "内容",
+                          "value": "answer"
+                        }
+                      ]
+                    },
+                    "node_data": {
+                      "reply_type": "content",
+                      "content": "【循环体占位】index={{循环开始.index}} item={{循环开始.item}}（落地时替换为真实子流程）",
+                      "is_result": true
+                    }
+                  }
+                }
+              ],
+              "edges": [
+                {
+                  "id": "e-loop-inner-1",
+                  "type": "app-edge",
+                  "sourceNodeId": "loop-start-node",
+                  "targetNodeId": "loop-inner-reply",
+                  "sourceAnchorId": "loop-start-node_right",
+                  "targetAnchorId": "loop-inner-reply_left",
+                  "startPoint": {
+                    "x": 0,
+                    "y": 0
+                  },
+                  "endPoint": {
+                    "x": 0,
+                    "y": 0
+                  },
+                  "pointsList": [],
+                  "properties": {}
+                }
+              ]
+            }
           },
           "config": {
             "fields": [

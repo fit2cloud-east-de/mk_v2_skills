@@ -53,9 +53,9 @@
         "properties": {
           "stepName": "基本信息",
           "node_data": {
-            "name": "拓扑-Plan规划分解",
+            "name": "[拓扑审核] 04-plan-decompose",
             "desc": "",
-            "prologue": "你好",
+            "prologue": "你好，我是「规划分解助手」。\n先生成计划，再按计划执行，最后综合。\n\n你可以这样问我：\n- 帮我规划一次两天的客户拜访行程\n- 把上线发布拆成可执行计划并给出结果",
             "tts_type": "BROWSER",
             "file_upload_enable": false
           },

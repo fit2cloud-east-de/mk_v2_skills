@@ -53,9 +53,9 @@
         "properties": {
           "stepName": "基本信息",
           "node_data": {
-            "name": "拓扑-GraphOfThought",
+            "name": "[拓扑审核] 14-graph-of-thought",
             "desc": "",
-            "prologue": "你好",
+            "prologue": "你好，我是「思维图推理助手」。\n推理单元为图节点，可多入多出、交叉传信，比树更自由。\n\n你可以这样问我：\n- 交叉分析：客户投诉、产品缺陷与流程缺口的关系\n- 多线索推断这个故障可能原因",
             "tts_type": "BROWSER",
             "file_upload_enable": false
           },
