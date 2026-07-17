@@ -31,6 +31,52 @@
 
 ---
 
+## 智能体设计拓扑样本（20 种）
+
+内置 **20+** 种智能体工作流拓扑少样本，便于头脑风暴选型后映射到 MaxKB 节点落地。完整设计思路、场景、要点与可解析 `work_flow` JSON 见目录：[`maxkb_func/maxkb-v2-workflow/topology-samples/`](maxkb_func/maxkb-v2-workflow/topology-samples/README.md)。
+
+> 样本为**设计骨架**（含真实节点 `type`），不是一键可发布的生产图。落地时需补全模型 ID、知识库 ID、工具代码，并按规范为每个 AI 节点补全 **Role / 限制 / 输出 / 示例** 提示词。
+
+| # | 拓扑 | 一句话说明 | 典型适用场景 | 样本文件 |
+|---|------|------------|--------------|----------|
+| 01 | **Sequential 串行** | 节点按固定顺序执行，上一步输出作为下一步输入 | 标准 RAG、单路径客服/问答 | [01-sequential](maxkb_func/maxkb-v2-workflow/topology-samples/01-sequential.md) |
+| 02 | **Parallel 并行** | 同一上游扇出到多路同时计算，再汇合 | 多视角摘要、多策略同时算再汇总 | [02-parallel](maxkb_func/maxkb-v2-workflow/topology-samples/02-parallel.md) |
+| 03 | **Loop 循环** | 对数组或次数重复执行同一子流程，可 break/continue | 列表逐条处理、批量工单 | [03-loop](maxkb_func/maxkb-v2-workflow/topology-samples/03-loop.md) |
+| 04 | **Plan 规划分解** | 先生成计划，再按计划执行，最后综合 | 多步骤任务、先列提纲再落地 | [04-plan-decompose](maxkb_func/maxkb-v2-workflow/topology-samples/04-plan-decompose.md) |
+| 05 | **Branch If-Else / Switch** | 按条件走不同出口；多分支近似 Switch | 意图分流、业务条件路由 | [05-branch-if-else-switch](maxkb_func/maxkb-v2-workflow/topology-samples/05-branch-if-else-switch.md) |
+| 06 | **Merge / Join 汇聚** | 多条并行路径汇入同一节点（AND 全到齐 / OR 任一即可） | 多库检索合并、多源结果去重 | [06-merge-join](maxkb_func/maxkb-v2-workflow/topology-samples/06-merge-join.md) |
+| 07 | **Retry 重试** | 失败后有限次再试，强调退出条件与兜底 | 不稳定外部工具、偶发超时 | [07-retry](maxkb_func/maxkb-v2-workflow/topology-samples/07-retry.md) |
+| 08 | **Short-circuit 短路** | 早满足条件则提前结束，跳过昂贵后续节点 | 高置信直接回答、命中即返 | [08-short-circuit](maxkb_func/maxkb-v2-workflow/topology-samples/08-short-circuit.md) |
+| 09 | **Cache Branch 缓存** | 先查缓存；命中短路返回，未命中计算后再回写 | 热点问法加速、重复查询降本 | [09-cache-branch](maxkb_func/maxkb-v2-workflow/topology-samples/09-cache-branch.md) |
+| 10 | **ReAct 推理+行动** | Thought → Action → Observation 循环，直到可作答 | 联网问答、工具解题、查库再答 | [10-react](maxkb_func/maxkb-v2-workflow/topology-samples/10-react.md) |
+| 11 | **Self-Plan + Replan** | 先 Plan，执行中发现异常/信息不足则 Replan | 旅游规划、开放式项目推进 | [11-self-plan-replan](maxkb_func/maxkb-v2-workflow/topology-samples/11-self-plan-replan.md) |
+| 12 | **Hierarchical Plan 分层规划** | 顶层总规划 → 中层子任务 → 底层工具执行 | 论文、软件等超长复杂任务 | [12-hierarchical-plan](maxkb_func/maxkb-v2-workflow/topology-samples/12-hierarchical-plan.md) |
+| 13 | **Tree-of-Thought 思维树** | 多分支并行推演多条解题路径，再择优 | 方案比选、多路径推演 | [13-tree-of-thought](maxkb_func/maxkb-v2-workflow/topology-samples/13-tree-of-thought.md) |
+| 14 | **Graph-of-Thought 思维图** | 推理单元为图节点，可多入多出、交叉传信 | 多线索交叉推理、复杂关联分析 | [14-graph-of-thought](maxkb_func/maxkb-v2-workflow/topology-samples/14-graph-of-thought.md) |
+| 15 | **Chain-of-Thought 思维链** | 串行分步推理，思考步骤内嵌在同一生成中 | 轻量分步推理、需要过程可见 | [15-chain-of-thought](maxkb_func/maxkb-v2-workflow/topology-samples/15-chain-of-thought.md) |
+| 16 | **Adaptive Router 自适应路由** | 按任务难度/资源动态选择简单串行、复杂并行或规划 | 统一入口、按难度分流 | [16-adaptive-router](maxkb_func/maxkb-v2-workflow/topology-samples/16-adaptive-router.md) |
+| 17 | **Throttle 资源限流** | 控制并行/并发数量，避免工具超限 | 批量处理控并发、API 配额受限 | [17-throttle](maxkb_func/maxkb-v2-workflow/topology-samples/17-throttle.md) |
+| 18 | **Delegation 委派** | 主 Agent 拆任务，委派专用子 Agent，返回后汇总 | 主从专家协作、多角色分工 | [18-delegation](maxkb_func/maxkb-v2-workflow/topology-samples/18-delegation.md) |
+| 19 | **Agent Sequential 流水线** | 多专职 Agent 串行流转 | 检索 → 分析 → 写作 → 审核 | [19-agent-sequential](maxkb_func/maxkb-v2-workflow/topology-samples/19-agent-sequential.md) |
+| 20 | **Memory Feedback 记忆回流** | 输出写入记忆，下轮读取再参与推理 | 多轮会话记忆、长期偏好回流 | [20-memory-feedback](maxkb_func/maxkb-v2-workflow/topology-samples/20-memory-feedback.md) |
+
+### 拓扑与 MaxKB 节点对照（速查）
+
+| 拓扑概念 | 常用 MaxKB 节点 |
+|----------|-----------------|
+| 串行 | 普通边连接 |
+| 并行 / 汇聚 | 一源多边；汇合边 `AND` / `OR` |
+| 分支 / Switch | `condition-node` / `intent-node` |
+| 循环 / Retry / ReAct | `loop-node` + break/continue |
+| 规划 / CoT | 多个或单个 `ai-chat-node` |
+| 委派 / 流水线 Agent | `application-node` |
+| 缓存 / 限流 / 记忆落库 | `tool-node`（+ 条件） |
+| 检索短路 | `search-knowledge-node` + `condition-node` + `reply-node` |
+
+节点参数细节见 [`maxkb_func/maxkb-v2-workflow/nodes-reference.md`](maxkb_func/maxkb-v2-workflow/nodes-reference.md)。
+
+---
+
 ## 目录结构
 
 ```text
