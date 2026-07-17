@@ -99,7 +99,7 @@ mk_v2_skills/
 │   ├── maxkb-v2-workflow/    ← 工作流、节点说明、topology-samples/
 │   ├── maxkb-v2-knowledge/   ← 知识库脚本与 API 对照
 │   └── maxkb-v2-tools/       ← 工具脚本与 API 对照
-└── superpowers-6.1.1/        ← 需求澄清（头脑风暴）用的规划能力
+└── superpowers-6.1.1/        ← 需求澄清（头脑风暴）用的规划能力（源自 obra/superpowers）
 ```
 
 配图约定见 [`docs/images/README.md`](docs/images/README.md)。
@@ -192,5 +192,5 @@ python scripts/list_workspaces.py \
 ## License 与第三方
 
 - MaxKB 为独立产品，请遵守其授权与部署条款。  
-- `superpowers-6.1.1/` 为第三方组件，请遵守其自带许可证与说明。  
+- `superpowers-6.1.1/` 为第三方组件，源自 [obra/superpowers](https://github.com/obra/superpowers)，请遵守其自带许可证与说明。  
 - 本套件其余内容的许可以本仓库根目录 LICENSE（如有）为准。

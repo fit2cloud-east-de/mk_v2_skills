@@ -171,7 +171,7 @@
       "type": "IF",
       "condition": "and",
       "conditions": [
-        { "field": ["start-node", "question"], "compare": "is_not_null", "value": "" }
+        { "field": ["start-node", "question"], "compare": "is_not_null", "value": 1 }
       ]
     },
     { "id": "else-uuid", "type": "ELSE", "condition": "and", "conditions": [] }
@@ -182,6 +182,8 @@
 出口边：`sourceAnchorId = "{nodeId}_{branchId}_right"`。
 
 比较符含：`is_null`, `is_not_null`, `eq`, `not_eq`, `contain`, `not_contain`, `gt`, `ge`, `lt`, `le`, `regex` 等。
+
+**坑**：`is_null` / `is_not_null` / `is_true` / `is_not_true` 不需要用户填写比较值，但序列化仍要求 `value` **非空**；官方 UI 固定写 `"value": 1`。写成 `""` 会报 `该字段不能为空`。检索短路常见写法：字段用 `is_hit_handling_method_list` + `is_not_null` + `value: 1`。
 
 ### tool-node（工作流内自定义代码）
 
