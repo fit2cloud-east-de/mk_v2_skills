@@ -117,7 +117,7 @@ ai-chat(思考)+condition+tool(行动/观察)+loop；限制轮次。也可用 ai
           "node_data": {
             "model_id": "{{MODEL_ID}}",
             "system": "你是助手。",
-            "prompt": "观察历史与问题，决定是否调用工具。问题：{{开始.question}}\n上轮观察：{{观察Observation.result}}",
+            "prompt": "观察问题，决定是否调用工具。仅当必须调工具时输出标记 [[ACTION]]；否则不要出现该标记。\n问题：{{开始.question}}",
             "dialogue_number": 1,
             "dialogue_type": "WORKFLOW",
             "is_result": false,
@@ -148,7 +148,7 @@ ai-chat(思考)+condition+tool(行动/观察)+loop；限制轮次。也可用 ai
                       "answer"
                     ],
                     "compare": "contain",
-                    "value": "ACTION"
+                    "value": "[[ACTION]]"
                   }
                 ]
               },
@@ -242,18 +242,18 @@ ai-chat(思考)+condition+tool(行动/观察)+loop；限制轮次。也可用 ai
         "properties": {
           "stepName": "ReAct循环",
           "node_data": {
-            "loop_type": "ARRAY",
+            "loop_type": "NUMBER",
             "array_reference_address": [
               "start-node",
               "question"
             ],
             "max_loop_count": 5,
-            "note": "MaxKB 循环体内部再挂 loop-start / ai-chat / tool / loop-break；此处为拓扑示意；已含最小 loop_body（loop-start + reply 占位），落地时替换循环体内真实节点。",
+            "note": "MaxKB 循环体内部再挂 loop-start / ai-chat / tool / loop-break；此处为拓扑示意；已含最小 loop_body（loop-start + reply 占位），落地时替换循环体内真实节点。 骨架测通：用 NUMBER=2，避免 ARRAY 把字符串按字符迭代。",
             "array": [
               "start-node",
               "question"
             ],
-            "number": 1,
+            "number": 2,
             "loop_body": {
               "nodes": [
                 {
@@ -297,7 +297,7 @@ ai-chat(思考)+condition+tool(行动/观察)+loop；限制轮次。也可用 ai
                     "node_data": {
                       "reply_type": "content",
                       "content": "【循环体占位】index={{循环开始.index}} item={{循环开始.item}}（落地时替换为真实子流程）",
-                      "is_result": true
+                      "is_result": false
                     }
                   }
                 }
@@ -357,7 +357,7 @@ ai-chat(思考)+condition+tool(行动/观察)+loop；限制轮次。也可用 ai
           "node_data": {
             "model_id": "{{MODEL_ID}}",
             "system": "你是助手。",
-            "prompt": "基于思考与观察给出答案。思考：{{思考Thought.answer}}",
+            "prompt": "基于思考给出答案。思考：{{思考Thought.answer}}\n问题：{{开始.question}}",
             "dialogue_number": 1,
             "dialogue_type": "WORKFLOW",
             "is_result": true,
@@ -461,24 +461,6 @@ ai-chat(思考)+condition+tool(行动/观察)+loop；限制轮次。也可用 ai
         "properties": {}
       },
       {
-        "id": "e6",
-        "type": "app-edge",
-        "sourceNodeId": "n-react-loop",
-        "targetNodeId": "n-think",
-        "sourceAnchorId": "n-react-loop_right",
-        "targetAnchorId": "n-think_left",
-        "startPoint": {
-          "x": 0,
-          "y": 0
-        },
-        "endPoint": {
-          "x": 0,
-          "y": 0
-        },
-        "pointsList": [],
-        "properties": {}
-      },
-      {
         "id": "e7",
         "type": "app-edge",
         "sourceNodeId": "n-need-act",
@@ -503,7 +485,8 @@ ai-chat(思考)+condition+tool(行动/观察)+loop；限制轮次。也可用 ai
   "key_points": [
     "Thought 输出约定是否 ACTION",
     "Observation 必须回灌下一轮",
-    "轮次上限，防止死循环"
+    "轮次上限，防止死循环",
+    "ARRAY 循环源必须是真正的 list；字符串会被按字符迭代。骨架可用 NUMBER。"
   ]
 }
 ```

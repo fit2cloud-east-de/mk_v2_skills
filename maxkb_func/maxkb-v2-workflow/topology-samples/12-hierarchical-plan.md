@@ -117,8 +117,8 @@
           "node_data": {
             "model_id": "{{MODEL_ID}}",
             "system": "你是助手。",
-            "prompt": "给出高层阶段：{{开始.question}}",
-            "dialogue_number": 1,
+            "prompt": "列出不超过3个阶段（短句）。目标：{{开始.question}}",
+            "dialogue_number": 0,
             "dialogue_type": "WORKFLOW",
             "is_result": false,
             "model_params_setting": {},
@@ -151,8 +151,8 @@
           "node_data": {
             "model_id": "{{MODEL_ID}}",
             "system": "你是助手。",
-            "prompt": "把阶段拆成子任务：{{顶层总规划.answer}}",
-            "dialogue_number": 1,
+            "prompt": "每阶段给1个子任务。顶层：{{顶层总规划.answer}}",
+            "dialogue_number": 0,
             "dialogue_type": "WORKFLOW",
             "is_result": false,
             "model_params_setting": {},
@@ -170,18 +170,18 @@
         "properties": {
           "stepName": "底层工具执行循环",
           "node_data": {
-            "loop_type": "ARRAY",
+            "loop_type": "NUMBER",
             "array_reference_address": [
               "start-node",
               "question"
             ],
             "max_loop_count": 5,
-            "note": "MaxKB 循环体内部再挂 loop-start / ai-chat / tool / loop-break；此处为拓扑示意；已含最小 loop_body（loop-start + reply 占位），落地时替换循环体内真实节点。",
+            "note": "MaxKB 循环体内部再挂 loop-start / ai-chat / tool / loop-break；此处为拓扑示意；已含最小 loop_body（loop-start + reply 占位），落地时替换循环体内真实节点。 骨架测通：用 NUMBER=2，避免 ARRAY 把字符串按字符迭代。",
             "array": [
               "start-node",
               "question"
             ],
-            "number": 1,
+            "number": 2,
             "loop_body": {
               "nodes": [
                 {
@@ -225,7 +225,7 @@
                     "node_data": {
                       "reply_type": "content",
                       "content": "【循环体占位】index={{循环开始.index}} item={{循环开始.item}}（落地时替换为真实子流程）",
-                      "is_result": true
+                      "is_result": false
                     }
                   }
                 }
@@ -285,8 +285,8 @@
           "node_data": {
             "model_id": "{{MODEL_ID}}",
             "system": "你是助手。",
-            "prompt": "汇总子任务与工具结果，形成终稿。",
-            "dialogue_number": 1,
+            "prompt": "汇总成短文大纲（不超过150字）。顶层：{{顶层总规划.answer}} 中层：{{中层子任务规划.answer}}",
+            "dialogue_number": 0,
             "dialogue_type": "WORKFLOW",
             "is_result": true,
             "model_params_setting": {},
@@ -338,26 +338,8 @@
         "id": "e3",
         "type": "app-edge",
         "sourceNodeId": "n-l2",
-        "targetNodeId": "n-l3",
-        "sourceAnchorId": "n-l2_right",
-        "targetAnchorId": "n-l3_left",
-        "startPoint": {
-          "x": 0,
-          "y": 0
-        },
-        "endPoint": {
-          "x": 0,
-          "y": 0
-        },
-        "pointsList": [],
-        "properties": {}
-      },
-      {
-        "id": "e4",
-        "type": "app-edge",
-        "sourceNodeId": "n-l3",
         "targetNodeId": "n-roll",
-        "sourceAnchorId": "n-l3_right",
+        "sourceAnchorId": "n-l2_right",
         "targetAnchorId": "n-roll_left",
         "startPoint": {
           "x": 0,
@@ -376,7 +358,9 @@
   "key_points": [
     "层间只传摘要与任务清单",
     "底层才调用 tool/application",
-    "逐级汇总，避免底层细节顶穿上下文"
+    "逐级汇总，避免底层细节顶穿上下文",
+    "ARRAY 循环源必须是真正的 list；字符串会被按字符迭代。骨架可用 NUMBER。",
+    "骨架测通：主路径顶层→中层→汇总；底层循环节点可保留但默认不接线，避免超时"
   ]
 }
 ```

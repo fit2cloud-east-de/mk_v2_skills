@@ -141,6 +141,8 @@
 
 **`loop-node` 保存硬性要求**：`node_data` 必须含非空 `loop_body`（内嵌 `{nodes, edges}`，至少含 `loop-start-node`），以及 `loop_type`（`ARRAY`/`NUMBER`/`LOOP`）。`ARRAY` 时用字段 `array: [nodeId, field...]`（勿只写 `array_reference_address`）。缺少 `loop_body` 时管理端保存会报 `NoneType is not iterable`。
 
+**ARRAY 坑**：`array` 引用的值必须是**真正的列表**。若引用 AI 的 `answer`（JSON 文本）或 `开始.question`（字符串），运行时会按**字符**迭代，易导致超长输出 / HTTP 500 / 空答。骨架测通优先用 `loop_type: NUMBER` + `number: 2`；生产落地需先用工具节点把 JSON 解析成 list 再 ARRAY。
+
 ### search-knowledge-node 默认检索
 
 ```json
@@ -205,6 +207,8 @@
 
 `source`：`custom` | `reference`；`type`：`string|int|dict|array|float`。  
 内嵌 `tool-node` 可用引用数组。**禁止**在 code 里 `subprocess`/`markitdown` 等（见 `SANDBOX.md`）。
+
+**坑**：`code` 字符串里不要写 `{{节点.字段}}`（含注释）——模板引擎会替换代码文本；若节点尚未就绪会报 `'xxx' is undefined`。注释请用纯文字说明。
 
 ### tool-lib-node（引用工具库）— 绑定陷阱
 

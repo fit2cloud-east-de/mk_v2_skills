@@ -136,18 +136,18 @@
         "properties": {
           "stepName": "按批顺序处理(限并发)",
           "node_data": {
-            "loop_type": "ARRAY",
+            "loop_type": "NUMBER",
             "array_reference_address": [
               "start-node",
               "question"
             ],
             "max_loop_count": 5,
-            "note": "MaxKB 循环体内部再挂 loop-start / ai-chat / tool / loop-break；此处为拓扑示意；已含最小 loop_body（loop-start + reply 占位），落地时替换循环体内真实节点。",
+            "note": "MaxKB 循环体内部再挂 loop-start / ai-chat / tool / loop-break；此处为拓扑示意；已含最小 loop_body（loop-start + reply 占位），落地时替换循环体内真实节点。 骨架测通：用 NUMBER=2，避免 ARRAY 把字符串按字符迭代。",
             "array": [
               "start-node",
               "question"
             ],
-            "number": 1,
+            "number": 2,
             "loop_body": {
               "nodes": [
                 {
@@ -191,7 +191,7 @@
                     "node_data": {
                       "reply_type": "content",
                       "content": "【循环体占位】index={{循环开始.index}} item={{循环开始.item}}（落地时替换为真实子流程）",
-                      "is_result": true
+                      "is_result": false
                     }
                   }
                 }
@@ -287,7 +287,7 @@
           "node_data": {
             "model_id": "{{MODEL_ID}}",
             "system": "你是助手。",
-            "prompt": "合并各批结果输出。",
+            "prompt": "根据切分与处理结果聚合输出。问题：{{开始.question}}",
             "dialogue_number": 1,
             "dialogue_type": "WORKFLOW",
             "is_result": true,
@@ -379,7 +379,8 @@
   "key_points": [
     "切批大小对齐 API 配额",
     "批间串行=天然限流",
-    "批内小并行需额外约束"
+    "批内小并行需额外约束",
+    "ARRAY 循环源必须是真正的 list；字符串会被按字符迭代。骨架可用 NUMBER。"
   ]
 }
 ```

@@ -138,18 +138,18 @@
         "properties": {
           "stepName": "逐步执行循环",
           "node_data": {
-            "loop_type": "ARRAY",
+            "loop_type": "NUMBER",
             "array_reference_address": [
               "n-plan-items",
               "answer"
             ],
             "max_loop_count": 5,
-            "note": "循环体内用界面节点名引用，如 {{循环开始.item}}；勿写 {{loop.item}}（易报 loop is undefined）。array 引用拆成列表.answer。",
+            "note": "循环体内用界面节点名引用，如 {{循环开始.item}}；勿写 {{loop.item}}（易报 loop is undefined）。array 引用拆成列表.answer。 骨架测通：用 NUMBER=2，避免 ARRAY 把字符串按字符迭代。",
             "array": [
               "n-plan-items",
               "answer"
             ],
-            "number": 1,
+            "number": 2,
             "loop_body": {
               "nodes": [
                 {
@@ -193,7 +193,7 @@
                     "node_data": {
                       "reply_type": "content",
                       "content": "【循环体占位】index={{循环开始.index}} item={{循环开始.item}}（落地时替换为真实子流程）",
-                      "is_result": true
+                      "is_result": false
                     }
                   }
                 }
@@ -253,7 +253,7 @@
           "node_data": {
             "model_id": "{{MODEL_ID}}",
             "system": "你是助手。",
-            "prompt": "循环结果：{{逐步执行循环.result}}\n给出最终答复。",
+            "prompt": "用户目标：{{开始.question}}\n循环节点结果：{{逐步执行循环.result}}\n请给出最终答复（不必纠结循环内部占位文案）。",
             "dialogue_number": 1,
             "dialogue_type": "WORKFLOW",
             "is_result": true,
@@ -328,7 +328,8 @@
     "必须设置 max_loop_count",
     "循环体内引用用 {{循环开始.item}} / {{循环开始.index}}，禁止 {{loop.xxx}}",
     "外层用 {{拆成列表.answer}}、{{逐步执行循环.result}}、{{汇总循环结果.answer}} 等界面名",
-    "循环体内可配 loop-break / continue"
+    "循环体内可配 loop-break / continue",
+    "ARRAY 循环源必须是真正的 list；字符串会被按字符迭代。骨架可用 NUMBER。"
   ]
 }
 ```

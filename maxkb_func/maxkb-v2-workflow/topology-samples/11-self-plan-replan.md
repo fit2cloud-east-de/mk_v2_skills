@@ -117,8 +117,8 @@ Plan/Replan 用 ai-chat；执行用 tool 或子步骤；条件触发重规划；
           "node_data": {
             "model_id": "{{MODEL_ID}}",
             "system": "你是助手。",
-            "prompt": "生成初始计划 JSON：{{开始.question}}",
-            "dialogue_number": 1,
+            "prompt": "用3条以内步骤给出计划 JSON 数组。目标：{{开始.question}}",
+            "dialogue_number": 0,
             "dialogue_type": "WORKFLOW",
             "is_result": false,
             "model_params_setting": {},
@@ -151,10 +151,10 @@ Plan/Replan 用 ai-chat；执行用 tool 或子步骤；条件触发重规划；
           "node_data": {
             "model_id": "{{MODEL_ID}}",
             "system": "你是助手。",
-            "prompt": "执行当前计划下一步。计划：{{初始Plan.answer}} / 修订：{{重规划Replan.answer}}",
-            "dialogue_number": 1,
+            "prompt": "按计划给出可执行的最终方案（完整输出）。计划：{{初始Plan.answer}}",
+            "dialogue_number": 0,
             "dialogue_type": "WORKFLOW",
-            "is_result": false,
+            "is_result": true,
             "model_params_setting": {},
             "model_setting": {
               "reasoning_content_enable": true
@@ -220,7 +220,7 @@ Plan/Replan 用 ai-chat；执行用 tool 或子步骤；条件触发重规划；
             "model_id": "{{MODEL_ID}}",
             "system": "你是助手。",
             "prompt": "根据执行反馈修订计划：{{执行一步.answer}}",
-            "dialogue_number": 1,
+            "dialogue_number": 0,
             "dialogue_type": "WORKFLOW",
             "is_result": false,
             "model_params_setting": {},
@@ -238,18 +238,18 @@ Plan/Replan 用 ai-chat；执行用 tool 或子步骤；条件触发重规划；
         "properties": {
           "stepName": "计划执行循环",
           "node_data": {
-            "loop_type": "ARRAY",
+            "loop_type": "NUMBER",
             "array_reference_address": [
               "start-node",
               "question"
             ],
             "max_loop_count": 5,
-            "note": "MaxKB 循环体内部再挂 loop-start / ai-chat / tool / loop-break；此处为拓扑示意；已含最小 loop_body（loop-start + reply 占位），落地时替换循环体内真实节点。",
+            "note": "MaxKB 循环体内部再挂 loop-start / ai-chat / tool / loop-break；此处为拓扑示意；已含最小 loop_body（loop-start + reply 占位），落地时替换循环体内真实节点。 骨架测通：用 NUMBER=2，避免 ARRAY 把字符串按字符迭代。",
             "array": [
               "start-node",
               "question"
             ],
-            "number": 1,
+            "number": 2,
             "loop_body": {
               "nodes": [
                 {
@@ -293,7 +293,7 @@ Plan/Replan 用 ai-chat；执行用 tool 或子步骤；条件触发重规划；
                     "node_data": {
                       "reply_type": "content",
                       "content": "【循环体占位】index={{循环开始.index}} item={{循环开始.item}}（落地时替换为真实子流程）",
-                      "is_result": true
+                      "is_result": false
                     }
                   }
                 }
@@ -332,35 +332,24 @@ Plan/Replan 用 ai-chat；执行用 tool 或子步骤；条件触发重规划；
       },
       {
         "id": "n-done",
-        "type": "ai-chat-node",
+        "type": "reply-node",
         "x": 400,
         "y": 300,
         "properties": {
           "stepName": "完成输出",
           "condition": "AND",
+          "node_data": {
+            "reply_type": "content",
+            "content": "方案已在上一步输出。",
+            "is_result": false
+          },
           "config": {
             "fields": [
               {
-                "label": "回答",
+                "label": "内容",
                 "value": "answer"
-              },
-              {
-                "label": "思考",
-                "value": "reasoning_content"
               }
             ]
-          },
-          "node_data": {
-            "model_id": "{{MODEL_ID}}",
-            "system": "你是助手。",
-            "prompt": "输出最终方案：{{执行一步.answer}}",
-            "dialogue_number": 1,
-            "dialogue_type": "WORKFLOW",
-            "is_result": true,
-            "model_params_setting": {},
-            "model_setting": {
-              "reasoning_content_enable": true
-            }
           }
         }
       }
@@ -401,114 +390,6 @@ Plan/Replan 用 ai-chat；执行用 tool 或子步骤；条件触发重规划；
         },
         "pointsList": [],
         "properties": {}
-      },
-      {
-        "id": "e3",
-        "type": "app-edge",
-        "sourceNodeId": "n-run",
-        "targetNodeId": "n-ok",
-        "sourceAnchorId": "n-run_right",
-        "targetAnchorId": "n-ok_left",
-        "startPoint": {
-          "x": 0,
-          "y": 0
-        },
-        "endPoint": {
-          "x": 0,
-          "y": 0
-        },
-        "pointsList": [],
-        "properties": {}
-      },
-      {
-        "id": "e4",
-        "type": "app-edge",
-        "sourceNodeId": "n-ok",
-        "targetNodeId": "n-replan",
-        "sourceAnchorId": "n-ok_br-replan_right",
-        "targetAnchorId": "n-replan_left",
-        "startPoint": {
-          "x": 0,
-          "y": 0
-        },
-        "endPoint": {
-          "x": 0,
-          "y": 0
-        },
-        "pointsList": [],
-        "properties": {}
-      },
-      {
-        "id": "e5",
-        "type": "app-edge",
-        "sourceNodeId": "n-replan",
-        "targetNodeId": "n-run",
-        "sourceAnchorId": "n-replan_right",
-        "targetAnchorId": "n-run_left",
-        "startPoint": {
-          "x": 0,
-          "y": 0
-        },
-        "endPoint": {
-          "x": 0,
-          "y": 0
-        },
-        "pointsList": [],
-        "properties": {}
-      },
-      {
-        "id": "e6",
-        "type": "app-edge",
-        "sourceNodeId": "n-ok",
-        "targetNodeId": "n-loop",
-        "sourceAnchorId": "n-ok_br-cont_right",
-        "targetAnchorId": "n-loop_left",
-        "startPoint": {
-          "x": 0,
-          "y": 0
-        },
-        "endPoint": {
-          "x": 0,
-          "y": 0
-        },
-        "pointsList": [],
-        "properties": {}
-      },
-      {
-        "id": "e7",
-        "type": "app-edge",
-        "sourceNodeId": "n-loop",
-        "targetNodeId": "n-run",
-        "sourceAnchorId": "n-loop_right",
-        "targetAnchorId": "n-run_left",
-        "startPoint": {
-          "x": 0,
-          "y": 0
-        },
-        "endPoint": {
-          "x": 0,
-          "y": 0
-        },
-        "pointsList": [],
-        "properties": {}
-      },
-      {
-        "id": "e8",
-        "type": "app-edge",
-        "sourceNodeId": "n-loop",
-        "targetNodeId": "n-done",
-        "sourceAnchorId": "n-loop_right",
-        "targetAnchorId": "n-done_left",
-        "startPoint": {
-          "x": 0,
-          "y": 0
-        },
-        "endPoint": {
-          "x": 0,
-          "y": 0
-        },
-        "pointsList": [],
-        "properties": {}
       }
     ]
   },
@@ -516,7 +397,9 @@ Plan/Replan 用 ai-chat；执行用 tool 或子步骤；条件触发重规划；
   "key_points": [
     "用显式标记触发 NEED_REPLAN",
     "Replan 覆盖当前计划再执行",
-    "总步数/重规划次数双上限"
+    "总步数/重规划次数双上限",
+    "ARRAY 循环源必须是真正的 list；字符串会被按字符迭代。骨架可用 NUMBER。",
+    "骨架测通：主路径 plan→execute(is_result)；重规划环保留节点但默认不接线，避免空答/死循环"
   ]
 }
 ```

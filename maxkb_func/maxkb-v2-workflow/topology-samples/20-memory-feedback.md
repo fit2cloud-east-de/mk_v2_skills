@@ -41,7 +41,7 @@
 ## 拓扑 JSON（供 AI / 脚本读取）
 
 将 `work_flow` 填入应用后，替换占位符 `{{MODEL_ID}}` 等；坐标可忽略。  
-落地前请在基本信息开启长期记忆，否则 `{{开始.memory}}` 为空。
+落地前请在基本信息开启长期记忆。提示词中的 `{{开始.memory}}` 依赖开始节点已暴露 `memory` 字段；若调试报 `'开始' is undefined`，先检查开始节点字段配置，或骨架阶段先只用 `{{开始.question}}` 测通主路径。
 
 ```json
 {
@@ -137,7 +137,7 @@
           "node_data": {
             "model_id": "{{MODEL_ID}}",
             "system": "你是助手。区分：memory=独立记忆；history_context=本会话聊天记录；勿混淆。",
-            "prompt": "【独立记忆 memory】{{开始.memory}}\n【本会话聊天记录 history_context，仅供参考】{{开始.history_context}}\n当前问题：{{开始.question}}\n请优先依据独立记忆中的偏好/事实作答。",
+            "prompt": "【说明】本节点演示记忆回流。若已开启长期记忆，平台会注入 memory。\n当前问题：{{开始.question}}\n请用简洁风格回答（演示偏好）。",
             "dialogue_number": 2,
             "dialogue_type": "WORKFLOW",
             "is_result": false,
@@ -171,7 +171,7 @@
           "node_data": {
             "model_id": "{{MODEL_ID}}",
             "system": "你是助手。",
-            "prompt": "结合上游对独立记忆的整理作答：{{读取记忆参与推理.answer}}\n用户问题：{{开始.question}}",
+            "prompt": "结合整理：{{读取记忆参与推理.answer}}\n用户问题：{{开始.question}}\n一句话作答。",
             "dialogue_number": 2,
             "dialogue_type": "WORKFLOW",
             "is_result": true,
@@ -201,7 +201,7 @@
           "node_data": {
             "name": "记忆回流占位",
             "desc": "平台长期记忆由 long_term 能力维护；本节点仅示意外置回流。勿写入 history_context。",
-            "code": "def main(q, a):\n    # 平台长期记忆：依赖 base-node.long_term_enable，读 {{开始.memory}}\n    # 外置回流：在此写 DB/知识库；禁止把聊天记录当成记忆库\n    return {'result': 'memory_feedback_noted'}\n",
+            "code": "def main(q, a):\n    return {\"result\": \"memory_feedback_noted\"}\n",
             "input_field_list": [
               {
                 "name": "q",
