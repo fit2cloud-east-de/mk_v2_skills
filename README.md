@@ -181,6 +181,13 @@ python scripts/list_workspaces.py \
 
 ---
 
+## 参与与反馈
+
+欢迎大家多提 [Issue](https://github.com/fit2cloud-east-de/mk_v2_skills/issues)：踩坑记录、能力缺口、文档不清、拓扑样本建议、新场景诉求都可以。  
+反馈越多，项目越容易成熟，也更能助力更多人把 MaxKB 智能体、知识库与工具真正落地。
+
+---
+
 ## License 与第三方
 
 - MaxKB 为独立产品，请遵守其授权与部署条款。  
