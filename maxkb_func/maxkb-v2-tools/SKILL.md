@@ -42,4 +42,4 @@ python debug_tool.py --code-file ./echo.py \
   --debug-fields-file ./debug.json
 ```
 
-`list_tools` / 创建时 `folder_id` 默认 = workspace id。
+`list_tools` / 创建时传 `--folder-id`（用户选根目录时用 workspace id）。创建前须按执行层「资源存放位置」让用户三选一。

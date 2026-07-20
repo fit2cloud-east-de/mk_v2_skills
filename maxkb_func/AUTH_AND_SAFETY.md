@@ -48,7 +48,8 @@ Authorization: Bearer <由用户提供的普通用户 API_KEY>
 | Admin API | `/admin/api` | 管理类脚本 |
 | Chat API | `/chat/api` | 生产对话 |
 
-`WORKSPACE` 可为显示名或 UUID；客户端经 `/workspace/by_user` 解析。根目录 `folder_id` 通常等于 workspace UUID。
+`WORKSPACE` 可为显示名或 UUID；客户端经 `/workspace/by_user` 解析。根目录 `folder_id` 通常等于 workspace UUID。  
+创建资源前须让用户选择：根目录 / 已有文件夹 / 新建文件夹（见 `maxkb_func/SKILL.md`「资源存放位置」）。
 
 ## 4. 删除资源（硬约束）
 
