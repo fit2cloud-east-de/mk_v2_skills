@@ -35,9 +35,9 @@ def main() -> int:
     require_yes(args.yes, f"update knowledge workflow {args.knowledge_id}")
 
     if args.body_json:
-        body = json.loads(Path(args.body_json).read_text(encoding="utf-8"))
+        body = json.loads(Path(args.body_json).read_text(encoding="utf-8-sig"))
     elif args.workflow_json:
-        wf = json.loads(Path(args.workflow_json).read_text(encoding="utf-8"))
+        wf = json.loads(Path(args.workflow_json).read_text(encoding="utf-8-sig"))
         if isinstance(wf, dict) and "work_flow" in wf:
             body = wf
         else:

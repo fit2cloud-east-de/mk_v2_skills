@@ -302,15 +302,39 @@
 
 ## 知识库工作流专用
 
+入库工作流（`WorkflowMode.KNOWLEDGE` / 知识库 type=4）。**终点必须是** `knowledge-write-node`。
+
+### 核心入库节点
+
+| type | 作用 | 典型输出 |
+|------|------|----------|
+| `knowledge-base-node` | 知识库基本信息 / 用户输入（固定） | `global.*` |
+| `data-source-local-node` | 本地文件数据源 | `file_list` |
+| `data-source-web-node` | Web 数据源 | `document_list`（含 content） |
+| `document-extract-node` | 解析文件正文 | `content`, `document_list` |
+| `document-split-node` | 分段 | `paragraph_list` |
+| `knowledge-write-node` | 写入并向量化（**终结**） | runtime `write_content`（UI 通常不可选） |
+
+推荐主链路：数据源 →（可选工具/AI）→ 解析 → 分段 → 写入。  
+Web 已带 content 时可跳过提取。多路分段用 `variable-aggregation-node` 再写入。
+
+### 工具与其它可用节点（支持，勿漏）
+
+知识库菜单 **支持** 调用工具，不是「只能数据源+分段」：
+
 | type | 作用 |
 |------|------|
-| `knowledge-base-node` | 知识库基本信息（类似 base） |
-| `data-source-local-node` | 本地文件数据源 → `file_list` |
-| `data-source-web-node` | Web 数据源 → `document_list` |
-| `document-extract-node` / `document-split-node` | 解析 / 分段 |
-| `knowledge-write-node` | 写入并向量化（终结） |
+| `tool-lib-node` | 工具库（含 **DATA_SOURCE** 型，可作起始数据源） |
+| `tool-workflow-lib-node` | 工作流工具 |
+| `tool-node` | 自定义/内联工具（遵守 SANDBOX） |
+| `mcp-node` | MCP 调用 |
+| `ai-chat-node` / `question-node` / `intent-node` 等 | AI 能力（清洗、改写等） |
+| `condition-node` / `loop-node` / `reply-node` | 业务逻辑 |
+| `variable-assign-node` / `variable-aggregation-node` / `variable-splitting-node` / `parameter-extraction-node` | 数据处理 |
 
-推荐链路：数据源 → 解析 → 分段 → 写入。
+**不含**（对话侧才有）：`search-knowledge-node`、`search-document-node`、`reranker-node`、`form-node`。
+
+MinerU 等商店模板：本质是数据源 → **工具节点** → 分段 → 写入；配参后须 `debug_knowledge_workflow.py` 自动调试再发布。
 
 ## 工具工作流专用
 

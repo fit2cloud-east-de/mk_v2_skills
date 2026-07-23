@@ -30,10 +30,14 @@ Header：`Authorization: Bearer YOUR_SYSTEM_API_KEY`。前缀：`{ADMIN_API}/wor
 | GET | `/{id}/workflow` | 入库工作流详情（`work_flow`） |
 | PUT | `/{id}/workflow` | 保存入库图：`{ work_flow: { nodes, edges } }` |
 | PUT | `/{id}/publish` | 发布入库工作流 |
-| POST | `/{id}/debug` | 调试 |
-| POST | `/{id}/upload_document` | 上传文档触发入库流 |
+| POST | `/{id}/debug` | 调试入库；body: `{ data_source, knowledge_base }`；返回 `action_id` |
+| GET | `/{id}/action/{action_id}` | 查询调试任务状态 / details（轮询至 SUCCESS/FAILURE） |
+| POST | `/{id}/action/{action_id}/cancel` | 取消调试 |
+| POST | `/{id}/upload_document` | 上传文档触发**已发布**入库流 |
 | GET | `/{id}/workflow/export` | 导出 `.kbwf` |
 | POST | `/{id}/workflow/import` | multipart `file`（`.kbwf`）；**会覆盖**当前库工作流 |
+
+`data_source` 须含数据源节点 `node_id`；本地另含 `file_list:[{name,file_id,status}]`（先 `POST /oss/file`）；Web 另含 `source_url` / `selector`。
 
 脚本：
 
@@ -43,6 +47,7 @@ Header：`Authorization: Bearer YOUR_SYSTEM_API_KEY`。前缀：`{ADMIN_API}/wor
 | 查看 | `get_knowledge.py` / `--with-workflow` |
 | 改元数据 | `update_knowledge.py` |
 | 改入库图 | `save_knowledge_workflow.py` |
+| **调试** | **`debug_knowledge_workflow.py`**（发布前必跑） |
 | 发布 | `publish_knowledge.py` |
 | 商店模板 | `download_kbwf_template.py` |
 | 导入 `.kbwf` | `import_knowledge_workflow.py`（需 `--allow-overwrite`） |
