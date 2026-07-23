@@ -19,6 +19,17 @@ description: >-
 | 无复用 | 工作流 `tool-node` |
 | 通用 | `create_tool.py` → `tool-lib-node`（入参用 `{{节点.字段}}` 模板） |
 | 需 shell/CLI | **不行**（默认禁 subprocess）：改节点方案或运维开沙箱开关 |
+| **挂到工作流知识库入库** | `return` 必须是入库契约 **A/B/C** 之一（见 [ingest-io-contracts.md](../maxkb-v2-knowledge/ingest-io-contracts.md)）；对外字段名永远是 `result` |
+
+### 入库场景下的 `return` 形状（摘要）
+
+| 接到 | `return` |
+|------|----------|
+| 文档内容提取 | `[{"file_id":"…","name":"…"}, …]` |
+| 文档分段 | `[{"name":"…","content":"…"}, …]` |
+| 知识库写入 | `[{"name":"…","paragraphs":[{"content":"…",…}]}, …]` |
+
+不要 `return` 一段自由文本却接到写入节点。
 
 ## 脚本
 

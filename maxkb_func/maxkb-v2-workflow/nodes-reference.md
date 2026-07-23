@@ -336,6 +336,20 @@ Web 已带 content 时可跳过提取。多路分段用 `variable-aggregation-no
 
 MinerU 等商店模板：本质是数据源 → **工具节点** → 分段 → 写入；配参后须 `debug_knowledge_workflow.py` 自动调试再发布。
 
+### 工具 / AI 输出必须对齐入库契约
+
+形状细节见知识库技能 **[ingest-io-contracts.md](../maxkb-v2-knowledge/ingest-io-contracts.md)**。摘要：
+
+| 下游 | 上游必须给出 |
+|------|----------------|
+| 文档内容提取 | **A**：`[{file_id, name}]`（本地 `file_list` 或工具 `result`） |
+| 文档分段 | **B**：`[{name, content}]` |
+| 知识库写入 | **C**：`[{name, paragraphs:[{content,…}]}]` |
+| （非法）写入 | AI 的 `answer` 字符串、未分段的 B、未提取的 A |
+
+- `tool-*`：只有 `result`；按接入点 `return` A/B/C。  
+- `ai-chat-node`：只有字符串 `answer` → 须参数提取/工具变成 B 或 C，并在提示词写死 JSON schema。  
+
 ## 工具工作流专用
 
 | type | 作用 |
