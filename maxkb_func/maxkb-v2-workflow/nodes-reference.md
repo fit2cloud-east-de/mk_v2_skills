@@ -304,18 +304,30 @@
 
 入库工作流（`WorkflowMode.KNOWLEDGE` / 知识库 type=4）。**终点必须是** `knowledge-write-node`。
 
+### 发布硬约束（界面校验）
+
+来源：`KnowledgeWorkFlowInstance`（`validate.ts`）。
+
+1. **基本信息**：必须有且仅有一个节点，`id === "knowledge-base-node"`（同时 `type` 同名）。缺了会报「基本信息节点必填」——指**节点缺失/id 错误**，不是「用户输入表单没填完」。  
+   - **避免**：`create_knowledge --kind workflow` 默认装骨架；`save_knowledge_workflow` 默认自动补该节点。  
+2. **开始 / 数据源**：至少一个 `properties.kind === "data-source"`（本地文件、Web 站点、或数据源型工具）。缺了报「开始节点必填」。  
+   - **避免**：创建时选 `--skeleton local|web`；保存时若无数据源脚本直接拒绝。  
+3. **结束**：Knowledge 模式下唯一合法结束类型是 `knowledge-write-node`。
+
+选型时先定文档从哪来（本地 / Web / 工具），再画图。Agent 规则见知识库 `SKILL.md` §2「Agent 硬规则」。
+
 ### 核心入库节点
 
 | type | 作用 | 典型输出 |
 |------|------|----------|
-| `knowledge-base-node` | 知识库基本信息 / 用户输入（固定） | `global.*` |
+| `knowledge-base-node` | 基本信息（**固定 id**） | `global.*` |
 | `data-source-local-node` | 本地文件数据源 | `file_list` |
 | `data-source-web-node` | Web 数据源 | `document_list`（含 content） |
 | `document-extract-node` | 解析文件正文 | `content`, `document_list` |
 | `document-split-node` | 分段 | `paragraph_list` |
 | `knowledge-write-node` | 写入并向量化（**终结**） | runtime `write_content`（UI 通常不可选） |
 
-推荐主链路：数据源 →（可选工具/AI）→ 解析 → 分段 → 写入。  
+推荐主链路：固定基本信息 + 数据源 →（可选工具/AI）→ 解析 → 分段 → 写入。  
 Web 已带 content 时可跳过提取。多路分段用 `variable-aggregation-node` 再写入。
 
 ### 工具与其它可用节点（支持，勿漏）

@@ -33,11 +33,13 @@ Header：`Authorization: Bearer YOUR_SYSTEM_API_KEY`。前缀：`{ADMIN_API}/wor
 }
 ```
 
-`tool_type`：`CUSTOM` | `INTERNAL` | `MCP` | `SKILL` | `WORKFLOW`。
+`tool_type`：`CUSTOM` | `INTERNAL` | `MCP` | `SKILL` | `WORKFLOW` | **`DATA_SOURCE`**（知识库数据源工具）。
+
+数据源创建规则、可省略字段、钩子函数名、常见 `NoneType`/base64 错误：见 [data-source-tools.md](data-source-tools.md)。
 
 ### Edit 额外字段
 
-`init_params`（dict），以及 Create 中可选字段。
+`init_params`（dict，服务端 RSA 加密），以及 Create 中可选字段。
 
 ## Debug / Lint / Connection
 

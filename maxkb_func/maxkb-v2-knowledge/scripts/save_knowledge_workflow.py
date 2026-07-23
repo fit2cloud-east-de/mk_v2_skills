@@ -4,9 +4,13 @@
 API: PUT .../knowledge/{id}/workflow
 Body: { "work_flow": { "nodes": [...], "edges": [...] } }
 
+Prevents UI publish errors by default:
+  - auto-fix id=knowledge-base-node if missing (「基本信息节点必填」)
+  - block save if no data-source (「开始节点必填」)
+  - block save if no knowledge-write-node
+
 Usage:
   python save_knowledge_workflow.py --knowledge-id KID --workflow-json path.json --yes
-  python save_knowledge_workflow.py --knowledge-id KID --body-json path.json --yes
 """
 from __future__ import annotations
 
@@ -16,6 +20,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "scripts"))
+from _lib.knowledge_workflow_graph import ensure_publish_shape, precheck_workflow
 from _lib.maxkb_client import (
     MaxKBError,
     add_common_args,
@@ -31,6 +36,16 @@ def main() -> int:
     p.add_argument("--knowledge-id", required=True)
     p.add_argument("--workflow-json", help="File with {nodes, edges} → wrapped as work_flow")
     p.add_argument("--body-json", help="Full PUT body (must include work_flow)")
+    p.add_argument(
+        "--no-fix-base",
+        action="store_true",
+        help="Do not auto-inject knowledge-base-node (default: inject if missing)",
+    )
+    p.add_argument(
+        "--skip-precheck",
+        action="store_true",
+        help="Skip publish-shape precheck (not recommended)",
+    )
     args = p.parse_args()
     require_yes(args.yes, f"update knowledge workflow {args.knowledge_id}")
 
@@ -48,6 +63,30 @@ def main() -> int:
     if not isinstance(body, dict) or not body.get("work_flow"):
         print("body must contain non-empty work_flow", file=sys.stderr)
         return 1
+
+    work_flow = body["work_flow"]
+    if not isinstance(work_flow, dict):
+        print("work_flow must be an object", file=sys.stderr)
+        return 1
+
+    work_flow, notes = ensure_publish_shape(
+        work_flow, fix_base=not args.no_fix_base
+    )
+    for n in notes:
+        print(f"[fix] {n}", file=sys.stderr)
+    body["work_flow"] = work_flow
+
+    if not args.skip_precheck:
+        problems = precheck_workflow(work_flow)
+        if problems:
+            print("[blocked] 保存前校验失败（与界面发布一致），可避免「基本信息/开始节点必填」：", file=sys.stderr)
+            for msg in problems:
+                print(f"  - {msg}", file=sys.stderr)
+            print(
+                "补齐数据源与写入节点后再保存；或 create_knowledge --kind workflow 使用默认骨架。",
+                file=sys.stderr,
+            )
+            return 2
 
     c = client_from_args(args)
     try:
