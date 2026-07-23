@@ -27,14 +27,27 @@ Header：`Authorization: Bearer YOUR_SYSTEM_API_KEY`。前缀：`{ADMIN_API}/wor
 
 | Method | Path | 说明 |
 |--------|------|------|
-| PUT | `/{id}` | 可更新工作流知识库字段（含编排，视版本而定） |
+| GET | `/{id}/workflow` | 入库工作流详情（`work_flow`） |
+| PUT | `/{id}/workflow` | 保存入库图：`{ work_flow: { nodes, edges } }` |
 | PUT | `/{id}/publish` | 发布入库工作流 |
 | POST | `/{id}/debug` | 调试 |
 | POST | `/{id}/upload_document` | 上传文档触发入库流 |
 | GET | `/{id}/workflow/export` | 导出 `.kbwf` |
 | POST | `/{id}/workflow/import` | multipart `file`（`.kbwf`）；**会覆盖**当前库工作流 |
 
-脚本：`download_kbwf_template.py`（飞致云商店拉最新模板）、`import_knowledge_workflow.py`（导入到指定库）。
+脚本：
+
+| 操作 | 脚本 |
+|------|------|
+| 创建 | `create_knowledge.py --kind workflow` |
+| 查看 | `get_knowledge.py` / `--with-workflow` |
+| 改元数据 | `update_knowledge.py` |
+| 改入库图 | `save_knowledge_workflow.py` |
+| 发布 | `publish_knowledge.py` |
+| 商店模板 | `download_kbwf_template.py` |
+| 导入 `.kbwf` | `import_knowledge_workflow.py`（需 `--allow-overwrite`） |
+| 导出 | `export_knowledge_workflow.py` |
+| 删除 | `delete_knowledge.py`（`--confirm-name` + `--yes`） |
 
 ## Document
 
