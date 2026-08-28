@@ -14,7 +14,8 @@ description: >-
 **禁止使用项目级 `.env`**：请用 `--host` / `--workspace` / `--api-key`（或当次进程环境变量）传入连接信息。  
 **解释器**：一律使用套件根 §0.1 已与用户确认的 `MK_PYTHON` / `MK_PIP`（或由其创建的 `.venv311`）。  
 **表述**：遵循套件根 §0.0 `MK_AUDIENCE`（小白通俗 / 专业技术）。  
-**AI 节点**：编排工作流时提示词须含 Role / 限制 / 输出 / 示例，见 [maxkb-v2-workflow/nodes-reference.md](maxkb-v2-workflow/nodes-reference.md)。
+**AI 节点**：编排工作流时提示词须含 Role / 限制 / 输出 / 示例，见 [maxkb-v2-workflow/nodes-reference.md](maxkb-v2-workflow/nodes-reference.md)。  
+**异常处理**：易失败节点应评估 `enableException` + `_exception_right` 兜底边，见 [maxkb-v2-workflow/exception-handling.md](maxkb-v2-workflow/exception-handling.md)。
 
 ## 0. 进入本层前：模式 + Python + 路径 + 连接
 
@@ -109,6 +110,7 @@ B. **直接制作（本执行层）** — 目标已明确，现在就建库/智�
 | 意图 | 打开 |
 |------|------|
 | 工作流 | [maxkb-v2-workflow/SKILL.md](maxkb-v2-workflow/SKILL.md) |
+| 异常处理 | [maxkb-v2-workflow/exception-handling.md](maxkb-v2-workflow/exception-handling.md) |
 | 拓扑少样本 | [maxkb-v2-workflow/topology-samples/README.md](maxkb-v2-workflow/topology-samples/README.md) |
 | 知识库 | [maxkb-v2-knowledge/SKILL.md](maxkb-v2-knowledge/SKILL.md) |
 | 工具 | [maxkb-v2-tools/SKILL.md](maxkb-v2-tools/SKILL.md) |

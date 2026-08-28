@@ -115,12 +115,12 @@
 
 | type | 关键 node_data | 主要输出 |
 |------|----------------|---------|
-| `ai-chat-node` | `model_id`, `system`, `prompt`, `dialogue_number`, `is_result`, `model_params_setting`, `tool_ids`, `mcp_*`, `vision` | `answer`, `reasoning_content`, `history_message` |
+| `ai-chat-node` | `model_id`, `system`, `prompt`, `dialogue_number`, `is_result`, `model_params_setting`, `tool_ids`, `mcp_*`, **`vision`（见下）** | `answer`, `reasoning_content`, `history_message` |
 | `search-knowledge-node` | `knowledge_id_list`, `knowledge_setting`, `question_reference_address`, `search_scope_*` | `paragraph_list`, `data`, `directly_return`, `is_hit_handling_method_list` |
 | `search-document-node` | 文档范围检索 | 文档列表相关 |
 | `question-node` | 问题优化模型/提示词 | 优化后问题 |
 | `condition-node` | `branch[]`（IF/ELSE IF/ELSE + conditions） | 走 `branch_id` 出口 |
-| `intent-node` | 意图分类 | `category`, `reason`；多出口 |
+| `intent-node` | 意图分类（见下节，**「其他」不可改**） | `category`, `reason`；多出口 |
 | `reply-node` | `reply_type`: `content`\|`referencing`, `content`/`fields`, `is_result` | 回复文本 |
 | `tool-node` | `code`, `input_field_list`, `is_result` | `result` |
 | `tool-lib-node` | `tool_lib_id`, `input_field_list` | `result` |
@@ -142,6 +142,37 @@
 **`loop-node` 保存硬性要求**：`node_data` 必须含非空 `loop_body`（内嵌 `{nodes, edges}`，至少含 `loop-start-node`），以及 `loop_type`（`ARRAY`/`NUMBER`/`LOOP`）。`ARRAY` 时用字段 `array: [nodeId, field...]`（勿只写 `array_reference_address`）。缺少 `loop_body` 时管理端保存会报 `NoneType is not iterable`。
 
 **ARRAY 坑**：`array` 引用的值必须是**真正的列表**。若引用 AI 的 `answer`（JSON 文本）或 `开始.question`（字符串），运行时会按**字符**迭代，易导致超长输出 / HTTP 500 / 空答。骨架测通优先用 `loop_type: NUMBER` + `number: 2`；生产落地需先用工具节点把 JSON 解析成 list 再 ARRAY。
+
+### ai-chat-node：视觉开关（文本模型也可开）
+
+界面在 **AI 对话节点**上有独立开关「视觉」（`node_data.vision`），**不要求**先换成「图像理解」专用节点；选普通 LLM / 文本对话模型时也可直接打开。
+
+| 字段 | 说明 |
+|------|------|
+| `vision` | `true` / `false`（默认 false）。UI 始终可开，与当前 `model_id` 是否标成视觉模型无关 |
+| `image_list` | 开视觉后**必填**：图片来源引用，如 `["start-node","image"]`（开始节点上传的图） |
+| `video_list` | 开视觉后可选：视频来源引用，如 `["start-node","video"]` |
+
+开启后，运行时把引用到的图/视频打进 `HumanMessage`（与文本 prompt 一起发给模型）。模型本身须支持多模态，否则开了也会失败——可用异常分支兜底。
+
+```json
+{
+  "model_id": "<LLM uuid>",
+  "system": "...",
+  "prompt": "{{开始.question}}",
+  "dialogue_number": 1,
+  "is_result": true,
+  "vision": true,
+  "image_list": ["start-node", "image"],
+  "video_list": ["start-node", "video"]
+}
+```
+
+注意：
+
+- 基本信息需开启对应上传（`file_upload_setting.image` / `video`），开始节点才会有 `image` / `video` 字段可引用。  
+- 纯文本问答保持 `vision: false`（或不写）；需要看图/看视频时再开，不必改成 `image-understand-node`（后者仍可用于「只做理解、不当主对话」的场景）。  
+- 源码：`ui/.../ai-chat-node/index.vue`（开关）；`ai_chat_step_node/.../base_chat_node.py`（`is_vision` + `_process_images/_process_videos`）。
 
 ### search-knowledge-node 默认检索
 
@@ -186,6 +217,65 @@
 比较符含：`is_null`, `is_not_null`, `eq`, `not_eq`, `contain`, `not_contain`, `gt`, `ge`, `lt`, `le`, `regex` 等。
 
 **坑**：`is_null` / `is_not_null` / `is_true` / `is_not_true` 不需要用户填写比较值，但序列化仍要求 `value` **非空**；官方 UI 固定写 `"value": 1`。写成 `""` 会报 `该字段不能为空`。检索短路常见写法：字段用 `is_hit_handling_method_list` + `is_not_null` + `value: 1`。
+
+**条件节点 `type: "ELSE"`**：兜底分支类型名固定为 `ELSE`，不要改成别的文案；条件列表保持 `[]`。
+
+### intent-node（意图识别）
+
+```json
+{
+  "model_id": "<LLM uuid>",
+  "dialogue_number": 1,
+  "content_list": ["start-node", "question"],
+  "branch": [
+    { "id": "intent-a", "content": "查订单", "isOther": false },
+    { "id": "intent-b", "content": "退款", "isOther": false },
+    { "id": "intent-other", "content": "其他", "isOther": true }
+  ]
+}
+```
+
+出口边：`sourceAnchorId = "{nodeId}_{branchId}_right"`（与 condition 相同）。
+
+#### 「其他」分支（前台只读 → AI 禁止改）
+
+源码：`intent-classify-node/index.vue` 对 `item.isOther` 的输入框 **`:disabled="true"`**，且不可删除；运行时用 **`isOther: true`** 找兜底（`find_other_branch`），不是靠文案匹配。
+
+| 规则 | 说明 |
+|------|------|
+| 必须有且仅有一条 `isOther: true` | 放在 `branch` **末尾** |
+| `content` 固定为 **`其他`** | 与 UI `t('common.other')` 一致；**禁止**改成「别的」「unknown」「default」等 |
+| **禁止**改 `isOther` 标志 | 不要把普通意图标成 other，也不要去掉 other |
+| 只改普通意图 | 仅编辑 `isOther: false` 的 `content` / 增删普通分支 |
+| 边锚点 | other 分支的 `id` 稳定后不要乱换，否则已接的异常/兜底边会断 |
+
+若 AI 改写了「其他」文案：前台仍 disabled，用户**无法在界面改回**，只能靠脚本/再保存纠正。
+
+### 前台不可编辑字段（通用）
+
+编排 / 改写 `work_flow` 时：**界面 disabled / 系统固定的字段，AI 不得改其展示文案或标志位**。已知：
+
+| 节点 | 固定项 |
+|------|--------|
+| `intent-node` | `isOther: true` 那条的 `content`（「其他」）与标志 |
+| `condition-node` | 末尾 `type: "ELSE"`（类型名与空 conditions） |
+| 异常输出 | `exception_message` 为运行时字段，不是让你在 node_data 里预填 |
+
+原则：**能拖拽出来的默认可改；灰掉的 / 系统兜底的只保持原样。**
+
+### 节点宽高（与画布拖拽一致）
+
+用户从左侧拖节点时，初始尺寸来自 `ui/.../workflow/common/data.ts`（多数约 **height 252～260**，默认 **width 340**）。打开节点后，LogicFlow 按内容测量并 `setHeight(内容高 + 100)`，写入 `properties.height`（见 `app-node.ts`）。
+
+| 做法 | 结果 |
+|------|------|
+| **生成/保存时省略 `properties.height` / `width`**（推荐） | 打开画布后按内容自动量，与手拖接近 |
+| 抄调试导出的很大 `height`（如 700+）或不写 width 却乱写 height | 画布上块异常偏大/偏小，和用户手拖不一致 |
+| 需要占位时 | 可用表：intent/多数业务节点 height≈260、width 可省略（默认 340）；**不要**把导出快照当标准 |
+
+`branch_condition_list[].height` 是**分支锚点相对偏移**（新增常见 12），**不是**整节点高度，禁止当成节点 `properties.height`。
+
+拓扑样本里的「坐标可忽略」同样适用于：**宽高可省略，勿为「好看」臆造。**
 
 ### tool-node（工作流内自定义代码）
 
@@ -379,5 +469,12 @@ MinerU 等商店模板：本质是数据源 → **工具节点** → 分段 → 
 多下游：并行（ThreadPoolExecutor, max_workers=200）
 汇合：properties.condition = AND | OR
 禁用：properties.disabled = true → 跳过
-异常分支：enableException + branch_id=exception
+异常分支：enableException + source = "{id}_exception_right"（运行时 branch_id=exception）
 ```
+
+### 异常分支（摘要）
+
+- 节点 `properties.enableException = true` → 失败时写入 `exception_message`，只走异常边，不中断整图（相对「未开则整条失败」）。  
+- UI 默认可开开关：`ai-chat-node`、图像理解/生成、视频理解；后端任意节点写 JSON 亦可。  
+- 下游引用：`{{步骤名.exception_message}}`；可接 `reply-node` / 再 AI / `tool-lib-node`（工单等）。  
+- **完整规范**：[exception-handling.md](exception-handling.md)。

@@ -3,8 +3,8 @@
 本目录为 **少样本示例**：用 AI 可读的 `work_flow` JSON 描述常见智能体拓扑，便于头脑风暴后选型，再映射到 MaxKB 节点落地。
 
 > 这些 JSON 是**设计骨架**（含 MaxKB 真实 `type`），不是保证一键可发布的完整生产图；落地时需补全模型 ID、循环体内部细节、工具代码与锚点。  
-> **AI 节点**：样本中的短 `system`/`prompt` 仅为占位；正式保存/发布前必须按 [nodes-reference.md](../nodes-reference.md)「AI 节点提示词规范」补全 **Role / 限制 / 输出 / 示例**。
-
+> **AI 节点**：样本中的短 `system`/`prompt` 仅为占位；正式保存/发布前必须按 [nodes-reference.md](../nodes-reference.md)「AI 节点提示词规范」补全 **Role / 限制 / 输出 / 示例**。  
+> **坐标 / 宽高可忽略**：不要抄导出里的超大 `properties.height`；intent 的「其他」分支 `isOther:true` + `content:"其他"` **禁止改文案**（见 [nodes-reference.md](../nodes-reference.md)）。
 ## 样本一览
 
 | 文件 | 拓扑 | 一句话用途 |
