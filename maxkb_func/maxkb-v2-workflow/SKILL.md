@@ -8,7 +8,7 @@ description: >-
 # MaxKB v2 Workflow
 
 Python **3.11+**。套件根：[../../SKILL.md](../../SKILL.md)。执行层连接参数见 [../SKILL.md](../SKILL.md) §0（HOST / WORKSPACE / **普通用户** API_KEY，Key 不进 skills）。  
-写操作：确认后加 `--yes`。**删除应用默认禁止**，仅当用户明确要求并「确认删除」后才可跑 `delete_app.py`。沙箱：[SANDBOX.md](../SANDBOX.md) · 节点：[nodes-reference.md](nodes-reference.md) · **异常处理**：[exception-handling.md](exception-handling.md) · **拓扑少样本**：[topology-samples/README.md](topology-samples/README.md)
+写操作：确认后加 `--yes`。**删除应用默认禁止**，仅当用户明确要求并「确认删除」后才可跑 `delete_app.py`。沙箱：[SANDBOX.md](../SANDBOX.md) · 节点：[nodes-reference.md](nodes-reference.md) · 输入与变量：[inputs-and-variables.md](inputs-and-variables.md) · 异常处理：[exception-handling.md](exception-handling.md) · 拓扑少样本：[topology-samples/README.md](topology-samples/README.md)
 
 ## AI 节点提示词（强制）
 

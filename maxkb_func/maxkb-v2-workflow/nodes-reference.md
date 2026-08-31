@@ -39,6 +39,8 @@
 
 支持格式（开启对应开关后）：文档 TXT/MD/DOCX/HTML/CSV/XLSX/XLS/PDF；图 JPG/PNG/GIF；音 MP3/WAV…；视频 MP4…；其它自定义后缀。默认最多约 3～10 文件、单文件数十 MB（以 `file_upload_setting` 为准）。
 
+`user_input_field_list` / `api_input_field_list` / `chat_input_field_list` / 文件上传的职责、引用与 `form_data` 传参见 [inputs-and-variables.md](inputs-and-variables.md)。
+
 ### start-node
 
 ```json

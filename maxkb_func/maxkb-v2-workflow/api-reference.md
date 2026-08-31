@@ -132,8 +132,11 @@ PUT body：`is_active`, `allow_cross_domain`, `cross_domain_list`, `is_permanent
 ## 变量引用
 
 - 节点输出：`{{节点显示名.字段}}` 或地址数组 `["node-id","field"]`
-- 全局：`{{global.time}}` 等（`node_id === "global"`）
-- 会话：`{{chat.xxx}}`（base-node 的 `chat_input_field_list`）
+- 全局：`{{global.time}}` / `{{global.自定义字段}}`（用户输入 + 接口传参 + 内置）
+- 会话：`{{chat.xxx}}`（`chat_input_field_list`）
+- 文件：`{{开始.document|image|audio|video|other}}`（须先开上传类型）
+
+细则与 JSON 样例：[inputs-and-variables.md](inputs-and-variables.md)。
 
 ## 文件 OSS
 

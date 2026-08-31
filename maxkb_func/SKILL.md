@@ -110,6 +110,7 @@ B. **直接制作（本执行层）** — 目标已明确，现在就建库/智�
 | 意图 | 打开 |
 |------|------|
 | 工作流 | [maxkb-v2-workflow/SKILL.md](maxkb-v2-workflow/SKILL.md) |
+| 输入与变量 | [maxkb-v2-workflow/inputs-and-variables.md](maxkb-v2-workflow/inputs-and-variables.md) |
 | 异常处理 | [maxkb-v2-workflow/exception-handling.md](maxkb-v2-workflow/exception-handling.md) |
 | 拓扑少样本 | [maxkb-v2-workflow/topology-samples/README.md](maxkb-v2-workflow/topology-samples/README.md) |
 | 知识库 | [maxkb-v2-knowledge/SKILL.md](maxkb-v2-knowledge/SKILL.md) |
