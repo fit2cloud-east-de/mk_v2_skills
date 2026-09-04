@@ -2,7 +2,7 @@
 
 套件根见上级 [../SKILL.md](../SKILL.md)。本文件属于 **maxkb_func 执行层**。
 
-**先完成套件根 §0**：锁定本机 `MK_PYTHON`（≥3.11）与 pip，再索取路径 A/B 与 HOST、WORKSPACE、普通用户 API_KEY（勿用管理员 Key；Key 勿写入 skills / `.env`）。
+**先完成套件根 §0**：锁定本机 `MK_PYTHON`（≥3.11）与 pip，再索取路径（默认直接制作；头脑风暴可选）与 HOST、WORKSPACE、普通用户 API_KEY（勿用管理员 Key；Key 勿写入 skills / `.env`）。
 
 在 `maxkb_func/` 下（将 `{MK_PYTHON}` 换成用户确认的解释器）：
 

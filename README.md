@@ -33,7 +33,7 @@
 
 ## 智能体设计拓扑样本（20 种）
 
-内置 **20+** 种智能体工作流拓扑少样本，便于头脑风暴选型后映射到 MaxKB 节点落地。完整设计思路、场景、要点与可解析 `work_flow` JSON 见目录：[`maxkb_func/maxkb-v2-workflow/topology-samples/`](maxkb_func/maxkb-v2-workflow/topology-samples/README.md)。
+内置 **20+** 种智能体工作流拓扑少样本，便于选型后映射到 MaxKB 节点落地（直接制作或头脑风暴获批后均可引用）。完整设计思路、场景、要点与可解析 `work_flow` JSON 见目录：[`maxkb_func/maxkb-v2-workflow/topology-samples/`](maxkb_func/maxkb-v2-workflow/topology-samples/README.md)。
 
 > 样本为**设计骨架**（含真实节点 `type`），不是一键可发布的生产图。落地时需补全模型 ID、知识库 ID、工具代码，并按规范为每个 AI 节点补全 **Role / 限制 / 输出 / 示例** 提示词。
 
@@ -99,7 +99,7 @@ mk_v2_skills/
 │   ├── maxkb-v2-workflow/    ← 工作流、节点说明、topology-samples/
 │   ├── maxkb-v2-knowledge/   ← 知识库脚本与 API 对照
 │   └── maxkb-v2-tools/       ← 工具脚本与 API 对照
-└── superpowers-6.1.1/        ← 需求澄清（头脑风暴）用的规划能力（源自 obra/superpowers）
+└── superpowers-6.1.1/        ← 可选头脑风暴（默认不加载；用户显式选择路径 A 时才用）
 ```
 
 配图约定见 [`docs/images/README.md`](docs/images/README.md)。
@@ -124,10 +124,12 @@ mk_v2_skills/
 3. 按助手提问依次确认：  
    - 沟通模式（小白 / 专业）  
    - 本机 Python（必要时安装 3.11）  
-   - 先头脑风暴还是直接制作
+   - 工作路径：**默认直接制作**；头脑风暴为可选（需求很模糊时再开）  
    - MaxKB 的 **HOST、工作空间、普通用户 API Key**  
 4. 写操作（创建/更新/发布等）前，助手应再次请你确认；确认后才会带 `--yes` 执行脚本。  
 5. **删除**更严格：助手默认不会删任何资源；只有你明确要求删除，并再次确认后才会执行。
+
+未选择头脑风暴时，助手不应加载 `superpowers-6.1.1/` 下的文档。
 
 手动跑脚本时（示例）：
 

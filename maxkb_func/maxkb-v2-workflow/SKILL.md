@@ -66,7 +66,7 @@ Python **3.11+**。套件根：[../../SKILL.md](../../SKILL.md)。执行层连�
 | Agent Sequential | [19-agent-sequential](topology-samples/19-agent-sequential.md) | 检索→分析→写作→审核 |
 | Memory Feedback | [20-memory-feedback](topology-samples/20-memory-feedback.md) | 独立记忆回流（≠聊天记录） |
 
-头脑风暴（路径 A）产出设计时，应点名选用上表哪一种（或组合），再进入脚本落地。
+若用户显式启用了头脑风暴（路径 A），产出设计时应点名选用上表哪一种（或组合），再进入脚本落地。默认直接制作时，也可按场景从表内选型，无需加载 superpowers。
 
 ## 脚本
 

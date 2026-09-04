@@ -2,8 +2,8 @@
 name: maxkb-func
 description: >-
   MaxKB v2 执行层：通过 Bearer API Key 与 Python 3.11+ 脚本编排工作流、知识库与工具。
-  进入本层前须完成套件根 §0：沟通模式（小白/专业）、Python、路径 A/B、HOST/WORKSPACE/普通用户 API Key。
-  Prefer scripts/. Use for MaxKB 落地、调试、发布、sandbox。
+  进入本层前须完成套件根 §0：沟通模式（小白/专业）、Python、路径（默认直接制作）、HOST/WORKSPACE/普通用户 API Key。
+  Prefer scripts/. Use for MaxKB 落地、调试、发布、sandbox. Superpowers/brainstorming only if user opted in.
 ---
 
 # maxkb_func（MaxKB 执行层）
@@ -15,7 +15,8 @@ description: >-
 **解释器**：一律使用套件根 §0.1 已与用户确认的 `MK_PYTHON` / `MK_PIP`（或由其创建的 `.venv311`）。  
 **表述**：遵循套件根 §0.0 `MK_AUDIENCE`（小白通俗 / 专业技术）。  
 **AI 节点**：编排工作流时提示词须含 Role / 限制 / 输出 / 示例，见 [maxkb-v2-workflow/nodes-reference.md](maxkb-v2-workflow/nodes-reference.md)。  
-**异常处理**：易失败节点应评估 `enableException` + `_exception_right` 兜底边，见 [maxkb-v2-workflow/exception-handling.md](maxkb-v2-workflow/exception-handling.md)。
+**异常处理**：易失败节点应评估 `enableException` + `_exception_right` 兜底边，见 [maxkb-v2-workflow/exception-handling.md](maxkb-v2-workflow/exception-handling.md)。  
+**superpowers**：仅当套件根 `MK_BRAINSTORM=on` 时才涉及；本层落地时默认不读 `../superpowers-6.1.1/`。
 
 ## 0. 进入本层前：模式 + Python + 路径 + 连接
 
@@ -37,9 +38,9 @@ description: >-
 ```markdown
 请选一条工作路径，并提供 MaxKB 连接信息：
 
-## 路径（二选一）
-A. **先头脑风暴** — 需求不清，先想清楚再动手  
-B. **直接制作（本执行层）** — 目标已明确，现在就建库/智能体/工具
+## 路径（默认 B）
+B. **直接制作（默认）** — 任务明确或要省 token，不启用头脑风暴 / 不扫 superpowers  
+A. **先头脑风暴（可选）** — 需求很模糊，需要方案对比时再选
 
 ## 连接信息（三项都要）
 1. 地址 HOST
@@ -51,9 +52,9 @@ B. **直接制作（本执行层）** — 目标已明确，现在就建库/智�
 
 | 选择 | 动作 |
 |------|------|
-| **A** | **先不要在本层写操作**；回到套件根做 brainstorming；获批后再回本层（仍须 MK_PYTHON≥3.11）。 |
-| **B** | `MK_PYTHON` 已是 3.11+ 且收齐连接三项后继续。 |
-| 用户说「已头脑风暴完 / 设计已批」 | 视为可直接制作；仍须 Python + 连接三项。 |
+| **B**（默认；含「都行」） | `MK_BRAINSTORM=off`；不读 superpowers；`MK_PYTHON`≥3.11 且收齐连接后继续本层 |
+| **A** | `MK_BRAINSTORM=on`；**先不要在本层写操作**；回到套件根 §1 brainstorming；获批后再回本层 |
+| 用户说「已头脑风暴完 / 设计已批」 | 视为可直接制作；仍须 Python + 连接三项；保持不必再扫 superpowers |
 
 连接三项含义：
 
@@ -152,7 +153,7 @@ B. **直接制作（本执行层）** — 目标已明确，现在就建库/智�
 3. 需要列表数据（已有文件夹、模型、知识库）时：**先列出具体名称/摘要**，再让用户选编号；勿说「请选已有文件夹」却不展示列表。  
 4. 小白模式：少术语；专业模式：可加 `kind` / 脚本名，但仍须保留可读说明。
 
-适用范围：沟通模式、路径 A/B、资源存放位置、知识库类型、PDF/MinerU、头脑风暴 2～3 种架构方案、拓扑选型等一切多选确认。
+适用范围：沟通模式、路径（默认直接制作 / 可选头脑风暴）、资源存放位置、知识库类型、PDF/MinerU、拓扑选型等一切多选确认。
 
 ## 资源存放位置（创建前必问）
 

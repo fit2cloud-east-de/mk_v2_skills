@@ -2,8 +2,8 @@
 name: mk-v2-skills
 description: >-
   MaxKB v2 技能套件根入口。会话开始须先让用户选沟通模式（编程小白/专业），
-  再确认本机 Python（≥3.7，跑脚本需 3.11），再选头脑风暴或直接制作，并索取 HOST/WORKSPACE/普通用户 API Key。
-  Use for MaxKB、智能体、知识库、工具、头脑风暴、Python 环境、调试发布。
+  再确认本机 Python（≥3.7，跑脚本需 3.11），再选是否启用头脑风暴（默认不启用）并索取 HOST/WORKSPACE/普通用户 API Key。
+  Use for MaxKB、智能体、知识库、工具、Python 环境、调试发布；头脑风暴仅用户显式选择时启用。
 ---
 
 # mk_v2_skills（套件根）
@@ -12,11 +12,13 @@ description: >-
 
 ```text
 mk_v2_skills/
-├── SKILL.md                      ← 本文件：沟通模式 + Python + 路径二选一 + 总路由
+├── SKILL.md                      ← 本文件：沟通模式 + Python + 路径 + 总路由
 ├── maxkb_func/                   ← 执行层：脚本落地 MaxKB（需 Python ≥ 3.11）
-└── superpowers-6.1.1/            ← 规划层：路径 A 时走头脑风暴（brainstorming）
+└── superpowers-6.1.1/            ← 可选：仅用户显式选「先头脑风暴」时才可读 brainstorming
     └── skills/brainstorming/
 ```
+
+**`superpowers-6.1.1/` 默认禁扫**：除非本会话用户已明确选择路径 A（或事后明确要求开启头脑风暴），禁止 `Read` / `Grep` / `Glob` / 打开该目录下任何文件（含 `brainstorming/SKILL.md` 及其它 skill）。默认只使用 `maxkb_func/`。
 
 ---
 
@@ -152,35 +154,38 @@ Windows 还可：`where py`、`where python`、`where pip`。
 | `MK_AUDIENCE` | `novice` \| `pro` |
 | `MK_PYTHON` | 如 `py -3.11` |
 | `MK_PIP` | 如 `py -3.11 -m pip` |
+| `MK_BRAINSTORM` | `off`（默认）\| `on`（仅用户显式选 A / 事后开启） |
 
 之后脚本命令一律用锁定的 `MK_PYTHON`（或 venv）。  
-路径 A（仅头脑风暴、不跑脚本）可在 Python 未就绪时继续；**一旦要落地必须先完成 0.1**。
+仅当用户**显式**选路径 A 时，可在 Python 未就绪下先做头脑风暴；**一旦要落地必须先完成 0.1**。默认路径（B）必须先锁定 3.11+ 再跑脚本。
 
 ---
 
-### 0.2 路径二选一 + MaxKB 连接信息
+### 0.2 路径 + MaxKB 连接信息（默认：直接制作，不启用 superpowers）
 
-Python 事宜谈妥后（或用户选择「先只头脑风暴」），用下面文案询问（可按 MK_AUDIENCE 改写措辞，选项含义不变）。  
-**未选定路径、且尚未拿到连接三项时，禁止写操作脚本。**
+Python 事宜谈妥后，用下面文案询问（可按 MK_AUDIENCE 改写措辞，选项含义不变）。  
+**默认推荐 B**。未选或说「都行 / 随便」→ 按 **B**，并锁定 `MK_BRAINSTORM=off`。  
+**`MK_BRAINSTORM=off` 时禁止打开或扫描 `superpowers-6.1.1/`。** 未收齐连接三项时，禁止写操作脚本。
 
 #### 向用户展示的引导文案（可原样使用）
 
 > 选项须展开具体内容（见执行层「方案 / 选项展示规范」）。
 
 ```markdown
-请选一条工作路径，并提供 MaxKB 连接信息（回复 **A** 或 **B**，并附上三项连接）：
+请选一条工作路径，并提供 MaxKB 连接信息（回复 **A** 或 **B**，并附上三项连接）。
+**默认建议选 B**（不启用头脑风暴 / 不加载 superpowers，省 token、目标明确时可直接落地）。
 
-### A. 先头脑风暴（推荐：目标还不清晰时）
-- **是什么**：先一起把目标、边界、方案对比想清楚，再动手建资源
-- **适合**：「帮我做一个客服助手」这类需求还模糊、要不要知识库/工具未定
-- **你会得到**：书面设计（角色、知识库、拓扑、验收问句）后再落地
-- **代价或注意**：落地前多一轮确认；获批前不会在系统里创建资源
+### B. 直接制作（默认）
+- **是什么**：不走头脑风暴包，直接按你的目标在系统里建知识库 / 智能体 / 工具
+- **适合 / 为何默认**：任务已经明确；或想节省上下文 token、不必做方案对比
+- **你会得到**：更快进入脚本落地与调试
+- **代价或注意**：需求若仍很模糊，中途可能返工（那时可再说「开启头脑风暴」）
 
-### B. 直接制作
-- **是什么**：目标已明确，现在就去系统里建知识库 / 智能体 / 工具
-- **适合**：已有设计文档，或只改开场白、挂已有库等小改
-- **你会得到**：更快看到系统里的成品
-- **代价或注意**：若需求中途大变，可能要返工
+### A. 先头脑风暴（可选）
+- **是什么**：启用 `superpowers` 头脑风暴流程，先澄清目标/方案/验收，获批后再落地
+- **适合**：需求很模糊、要不要知识库/工具/多 Agent 未定、需要 2～3 种方案对比
+- **你会得到**：书面设计后再建资源
+- **代价或注意**：多一轮确认；会加载额外技能文档（更多 token）；获批前不创建资源
 
 ## 连接信息（三项都要）
 1. 地址 HOST（浏览器打开 MaxKB 时的网址）
@@ -196,33 +201,33 @@ Python 事宜谈妥后（或用户选择「先只头脑风暴」），用下面�
 
 | 用户选择 | Agent 动作 |
 |----------|------------|
-| **A 先头脑风暴** | 打开并遵循 [superpowers-6.1.1/skills/brainstorming/SKILL.md](superpowers-6.1.1/skills/brainstorming/SKILL.md)；表达随 `MK_AUDIENCE`；**设计获批前禁止** `maxkb_func` 写操作。 |
-| **B 直接制作** | 确认 `MK_PYTHON`≥3.11 → [maxkb_func/SKILL.md](maxkb_func/SKILL.md)；解释深度随模式。 |
-| 未选路径 / 未选模式 | 再问，不默认（模式「都行」→ 小白）。 |
-| 缺连接三项 | 可先做 A 的澄清，**落地前必须补齐**。 |
-| Python 未锁定 / &lt;3.11 | 禁止跑脚本；回到 0.1。 |
+| **B 直接制作**（含「都行 / 默认 / 不选」） | `MK_BRAINSTORM=off`；**禁止**读写 `superpowers-6.1.1/`；确认 `MK_PYTHON`≥3.11 → [maxkb_func/SKILL.md](maxkb_func/SKILL.md) |
+| **A 先头脑风暴** | `MK_BRAINSTORM=on`；**仅此时**可读 [superpowers-6.1.1/skills/brainstorming/SKILL.md](superpowers-6.1.1/skills/brainstorming/SKILL.md)；表达随 `MK_AUDIENCE`；设计获批前禁止 `maxkb_func` 写操作；**仍不要**加载同目录其它 skill（TDD/worktree 等） |
+| 会话中途说「开启头脑风暴 / 用 superpowers」 | 才把 `MK_BRAINSTORM` 改为 on，并按 §1 执行；此前保持 off |
+| 缺连接三项 | B 路径须补齐再写操作；A 可先澄清，**落地前必须补齐** |
+| Python 未锁定 / &lt;3.11 | 禁止跑脚本；回到 0.1 |
 
-#### 何时建议选 A / B（可顺带告知用户）
+#### 何时可提醒用户改选 A（仅提示，不擅自切换）
 
-| 更适合 A（头脑风暴） | 更适合 B（直接制作） |
-|----------------------|----------------------|
-| 「帮我做一个客服助手」这类目标模糊 | 「用已有 FAQ PDF 建库 + RAG」目标清楚 |
-| 要不要知识库/工具/多 Agent 未定 | 只改 prologue、加 reply、调检索参数 |
-| 需要 2～3 种方案对比与验收标准 | 已有设计文档 / 上次会话已定稿 |
+| 可提示考虑 A | 保持 B 即可 |
+|--------------|-------------|
+| 「帮我做一个客服助手」目标极模糊 | 「用已有 FAQ 建库 + RAG」已说清 |
+| 要不要知识库/工具/多 Agent 未定 | 只改 prologue、挂已有库、调参数 |
+| 用户主动要方案对比 | 已有设计文档 / 上次已定稿 |
 
 ---
 
-## 1. 头脑风暴（路径 A）
+## 1. 头脑风暴（仅路径 A / `MK_BRAINSTORM=on`）
 
-路径 A 时打开 [superpowers-6.1.1/skills/brainstorming/SKILL.md](superpowers-6.1.1/skills/brainstorming/SKILL.md)，把模糊需求澄清成可落地的设计（目的、边界、方案对比、验收场景）。
+**默认跳过本节。** 仅当用户显式选 A（或中途明确要求开启）时，才打开 [superpowers-6.1.1/skills/brainstorming/SKILL.md](superpowers-6.1.1/skills/brainstorming/SKILL.md)，把模糊需求澄清成可落地的设计。
 
 | 能力 | 说明 |
 |------|------|
-| **何时用** | 用户选了路径 A，或新做/大改智能体、知识域、工具契约 |
-| **何时不用** | 用户选了路径 B；或纯运维小改 |
+| **何时用** | 用户显式选了路径 A，或明确说「开启头脑风暴」 |
+| **何时不用（默认）** | 路径 B；未选；「都行」；纯运维小改；用户未再指定 |
 | **获批后怎么落地** | **不要**再走 `writing-plans` → TDD → worktree；改为打开 **`maxkb_func`** 用脚本落地 |
 
-同目录下其它 skill（TDD、worktree、code review 等）与 MaxKB 编排无关，**默认不要启用**。
+同目录下其它 skill（TDD、worktree、code review、using-superpowers 等）与 MaxKB 编排无关，**即使开了 A 也默认不要启用**。
 
 ### 操作步骤（路径 A）
 
@@ -284,7 +289,7 @@ Python 事宜谈妥后（或用户选择「先只头脑风暴」），用下面�
 | 工具与沙箱 | [maxkb_func/maxkb-v2-tools/SKILL.md](maxkb_func/maxkb-v2-tools/SKILL.md) |
 | 端到端示例 | [maxkb_func/examples.md](maxkb_func/examples.md) |
 
-路径 B 或路径 A 设计获批后，都走这里。
+路径 B（默认）或路径 A 设计获批后，都走这里。
 
 ---
 
@@ -298,4 +303,4 @@ Python 事宜谈妥后（或用户选择「先只头脑风暴」），用下面�
 6. **AI 节点提示词**：凡 `ai-chat-node` 等大模型节点，落地提示词必须完整包含 **Role / 限制 / 输出 / 示例**；禁止空泛「你是助手」。见 [maxkb_func/maxkb-v2-workflow/nodes-reference.md](maxkb_func/maxkb-v2-workflow/nodes-reference.md)。  
 7. **规划产物**：可写规格与 tasks，勿写真实密钥。  
 8. **头脑风暴获批后**：进入 `maxkb_func` 落地；不要改写 `superpowers-6.1.1/` 下的文件来「适配」本套件。  
-9. **路径未选清时不要默认直接制作**；小改若用户明确说「直接做」可走 B。
+9. **superpowers 默认关闭**：`MK_BRAINSTORM` 默认 `off`；未显式选 A（或未事后指定开启）时，**禁止扫描/读取** `superpowers-6.1.1/`；路径未表态时按 **B 直接制作**。

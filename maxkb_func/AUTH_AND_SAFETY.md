@@ -8,10 +8,10 @@ Agent **必须先**完成套件根 [SKILL.md](../SKILL.md) §0，顺序摘要：
 
 0. **沟通模式**：编程小白（novice）/ 专业（pro）— 见根 §0.0；后续表述深度据此调整  
 1. **Python**：探测 → 无 3.11+ 则询问是否安装 → 锁定 `MK_PYTHON`/`MK_PIP`  
-2. **路径**：A 先头脑风暴 / B 直接制作 — 见根 §0.2  
+2. **路径**：默认 **B 直接制作**（`MK_BRAINSTORM=off`，不扫 superpowers）；**A 先头脑风暴**仅用户显式选择 — 见根 §0.2  
 3. `HOST` / `WORKSPACE` / `API_KEY`（普通用户 Key）
 
-选 A 时：设计获批前不做本层写操作。选 B 或设计已批：须已锁定 Python ≥ 3.11，再用连接三项落地。
+选 A 时：设计获批前不做本层写操作，且仅此时可读 `superpowers-6.1.1/skills/brainstorming`。选 B（默认）或设计已批：须已锁定 Python ≥ 3.11，再用连接三项落地；**禁止**读取 `superpowers-6.1.1/`。
 
 **禁止使用管理员 / 超管账号的 Key。**  
 **禁止把真实 Key 写入任何 skill / md / 示例 / `.env` 文件。**  
@@ -98,8 +98,8 @@ Authorization: Bearer <由用户提供的普通用户 API_KEY>
 ```text
 0. 沟通模式：编程小白 / 专业（锁定 MK_AUDIENCE）
 1. 探测本机 Python；无 3.11+ 则询问是否安装；锁定 MK_PYTHON / MK_PIP
-2. 路径二选一（A 头脑风暴 / B 直接制作）+ HOST / WORKSPACE / 普通用户 API_KEY
-3. 若选 A：brainstorming → 设计获批 → 交接清单；若选 B：跳过
+2. 路径（默认 B 直接制作；A 头脑风暴可选）+ HOST / WORKSPACE / 普通用户 API_KEY
+3. 若选 A：brainstorming → 设计获批 → 交接清单；若选 B（默认）：跳过且不读 superpowers
 4. 用已锁定解释器：venv + pip install -r requirements.txt（不建项目 .env）
 5. list_workspaces 自检
 6. knowledge / tool / workflow 脚本
