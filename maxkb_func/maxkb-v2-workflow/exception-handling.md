@@ -13,20 +13,19 @@
 | 异常边 | `sourceAnchorId = "{nodeId}_exception_right"`（界面橙色锚点） |
 | 报错字段 | 开启后多出输出 **`exception_message`**（异常信息字符串） |
 | 运行时 | 节点 `status=500` 且已开异常 → 写入 `exception_message`，设 `branch_id=exception`，**只走异常边**；未开则整条工作流失败中断 |
-
-源码要点：`apps/application/flow/workflow_manage.py`（捕获异常 / `status==500` 后分支）；`get_next_node_list` 用 `branch_id` 匹配 `{id}_{branch_id}_right`；UI 锚点见 `ui/src/workflow/common/app-node.ts`。
+| 边匹配 | 异常边靠 `branch_id=exception` 对应 `{id}_exception_right`，与条件分支同一套锚点规则 |
 
 ---
 
 ## 2. 界面哪些节点能开「异常」
 
-2.10.3 前端默认在「输出参数」旁展示开关的类型（`NodeContainer.vue` → `exceptionNodeList`）：
+界面默认在「输出参数」旁展示异常开关的类型：
 
-- `ai-chat-node`（AI 对话，常被叫「智能体对话节点」）
+- `ai-chat-node`（AI 对话）
 - `image-understand-node` / `image-generate-node`
 - `video-understand-node`
 
-**后端不限制类型**：任意节点只要 JSON 里写了 `enableException: true` 且接了 `_exception_right` 边，失败时同样走异常分支。工具 / 子应用等若界面无开关，可用脚本写入；接边时 source 必须是 `{id}_exception_right`。
+任意节点只要 JSON 写了 `enableException: true` 且接了 `_exception_right` 边，失败时同样走异常分支。工具 / 子应用等若界面无开关，可用脚本写入；接边 source 必须是 `{id}_exception_right`。
 
 ---
 
@@ -117,7 +116,7 @@
 
 ---
 
-## 5. 运行时行为（对照源码）
+## 5. 运行时行为
 
 ```text
 节点执行抛错或结果 status=500

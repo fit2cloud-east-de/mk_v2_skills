@@ -111,6 +111,7 @@ A. **先头脑风暴（可选）** — 需求很模糊，需要方案对比时�
 | 意图 | 打开 |
 |------|------|
 | 工作流 | [maxkb-v2-workflow/SKILL.md](maxkb-v2-workflow/SKILL.md) |
+| 界面约束 | [maxkb-v2-workflow/ui-constraints.md](maxkb-v2-workflow/ui-constraints.md) |
 | 输入与变量 | [maxkb-v2-workflow/inputs-and-variables.md](maxkb-v2-workflow/inputs-and-variables.md) |
 | 异常处理 | [maxkb-v2-workflow/exception-handling.md](maxkb-v2-workflow/exception-handling.md) |
 | 拓扑少样本 | [maxkb-v2-workflow/topology-samples/README.md](maxkb-v2-workflow/topology-samples/README.md) |

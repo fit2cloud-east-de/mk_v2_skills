@@ -155,7 +155,7 @@ DOCX / MD / TXT / FAQ / 表格？ ──是──► base（普通分段或专�
 
 | 界面提示 | 真实含义 | 怎么修 |
 |----------|----------|--------|
-| **基本信息节点必填** | 图里**缺少**固定节点：`id` **必须**是 `knowledge-base-node`（`type` 同为 `knowledge-base-node`）。**不是**要你填一堆表单字段；是节点本身没了或 `id` 写错 | 补回该节点；脚本/导入时**禁止**改掉这个固定 id，也禁止用随机 uuid 代替 |
+| **基本信息节点必填** | 图里**缺少**固定节点：`id` **必须**是 `knowledge-base-node`（`type` 同为 `knowledge-base-node`）。**不是**要你填一堆表单字段；是节点本身没了或 `id` 写错 | 补回该节点；脚本/导入时**禁止**改掉这个固定 id，也禁止用随机 uuid 代替。应用侧同类规则见 [ui-constraints.md](../maxkb-v2-workflow/ui-constraints.md) |
 | **开始节点必填** | **没有任何数据源起点**：须至少 1 个 `properties.kind === "data-source"` 的节点 | 见下表「数据源三选一（可多）」 |
 | **节点不能当做结束节点** | 某条分支的终点不是 `knowledge-write-node` | 每条数据源链路最终都要接到「知识库写入」 |
 

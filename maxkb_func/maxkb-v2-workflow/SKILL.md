@@ -8,7 +8,7 @@ description: >-
 # MaxKB v2 Workflow
 
 Python **3.11+**。套件根：[../../SKILL.md](../../SKILL.md)。执行层连接参数见 [../SKILL.md](../SKILL.md) §0（HOST / WORKSPACE / **普通用户** API_KEY，Key 不进 skills）。  
-写操作：确认后加 `--yes`。**删除应用默认禁止**，仅当用户明确要求并「确认删除」后才可跑 `delete_app.py`。沙箱：[SANDBOX.md](../SANDBOX.md) · 节点：[nodes-reference.md](nodes-reference.md) · 输入与变量：[inputs-and-variables.md](inputs-and-variables.md) · 异常处理：[exception-handling.md](exception-handling.md) · 拓扑少样本：[topology-samples/README.md](topology-samples/README.md)
+写操作：确认后加 `--yes`。**删除应用默认禁止**，仅当用户明确要求并「确认删除」后才可跑 `delete_app.py`。沙箱：[SANDBOX.md](../SANDBOX.md) · 节点：[nodes-reference.md](nodes-reference.md) · **界面约束**：[ui-constraints.md](ui-constraints.md) · 输入与变量：[inputs-and-variables.md](inputs-and-variables.md) · 异常处理：[exception-handling.md](exception-handling.md) · 拓扑少样本：[topology-samples/README.md](topology-samples/README.md)
 
 ## AI 节点提示词（强制）
 
@@ -21,18 +21,20 @@ Python **3.11+**。套件根：[../../SKILL.md](../../SKILL.md)。执行层连�
 
 禁止只写「你是助手」等空泛 system。细则与模板见 [nodes-reference.md](nodes-reference.md)「AI 节点提示词规范」。拓扑样本中的短提示词仅为骨架，保存/发布前须按规范补全。
 
-## 前台只读 / 系统固定字段（强制）
+## 界面约束（强制）
 
-界面 **disabled、不可删改** 的项，生成或改写 `work_flow` 时 **禁止改文案或标志**。尤其：
+编排前先遵循 [ui-constraints.md](ui-constraints.md)：固定节点不可删改 id；界面灰掉的项禁止改；意图「其他」、条件 `ELSE` 保持系统原样；条件/意图/检索等不要单独当对话叶节点；叶节点对用户说话须 `is_result: true`。
 
-- **`intent-node`**：`isOther: true` 分支的 `content` 必须保持 **`其他`**，且始终有且仅有一条；只增删/改写 `isOther: false` 的意图。  
-- **`condition-node`**：末尾 `type: "ELSE"` 不要改名。  
+要点（完整表见专文）：
 
-详见 [nodes-reference.md](nodes-reference.md)「intent-node」「前台不可编辑字段」。
+- **`intent-node`**：末条必须 `isOther: true` 且 `content` 为 **`其他`**（界面禁用编辑，改错用户改不回）  
+- **`condition-node`**：末条 `type: "ELSE"` + 空 `conditions`  
+- **固定节点**：应用图 `base-node` / `start-node`；知识库图 `knowledge-base-node` + 数据源 + 写入终点  
+- **宽高**：省略 `properties.height` / `width`  
 
 ## 节点宽高（强制）
 
-保存工作流时 **优先省略** `properties.height` / `properties.width`，让画布按内容自动测量（与用户拖拽一致）。禁止抄调试导出的超大 height。默认宽约 340；intent 等占位高约 260。详见 [nodes-reference.md](nodes-reference.md)「节点宽高」。
+保存工作流时 **优先省略** `properties.height` / `properties.width`，让画布按内容自动测量（与用户拖拽一致）。禁止抄调试导出的超大 height。默认宽约 340；intent 等占位高约 260。详见 [ui-constraints.md](ui-constraints.md) / [nodes-reference.md](nodes-reference.md)「节点宽高」。
 
 ## 异常处理（强制意识）
 

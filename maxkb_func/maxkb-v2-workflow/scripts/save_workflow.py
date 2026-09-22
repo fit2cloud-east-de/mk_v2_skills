@@ -5,8 +5,9 @@ Usage:
   python save_workflow.py --app-id ID --workflow-json path.json --yes
   python save_workflow.py --app-id ID --body-json path.json --yes
 
-By default normalizes layout/intent quirks so AI-generated graphs match the UI:
+By default normalizes UI-locked fields so generated graphs match the canvas:
   - intent-node: force isOther branch content to 「其他」
+  - condition-node: ensure trailing ELSE has type ELSE and empty conditions
   - drop properties.height / width (canvas measures like drag-and-drop)
 Pass --keep-node-size to retain height/width from JSON.
 """
@@ -27,6 +28,48 @@ from _lib.maxkb_client import (
     require_yes,
 )
 
+FIXED_NODE_IDS = frozenset(
+    {
+        "base-node",
+        "start-node",
+        "knowledge-base-node",
+        "tool-base-node",
+        "tool-start-node",
+        "loop-start-node",
+    }
+)
+
+
+def _normalize_intent(nd: dict[str, Any]) -> None:
+    branch = nd.get("branch")
+    if not isinstance(branch, list):
+        return
+    others = [b for b in branch if isinstance(b, dict) and b.get("isOther")]
+    for b in others:
+        b["content"] = "其他"
+        b["isOther"] = True
+    if not others and branch:
+        last = branch[-1]
+        if isinstance(last, dict) and last.get("content") in ("其他", "其它", "other", "Other"):
+            last["isOther"] = True
+            last["content"] = "其他"
+
+
+def _normalize_condition(nd: dict[str, Any]) -> None:
+    branch = nd.get("branch")
+    if not isinstance(branch, list) or not branch:
+        return
+    last = branch[-1]
+    if not isinstance(last, dict):
+        return
+    t = last.get("type")
+    t_norm = str(t).strip().upper() if t is not None else ""
+    # Only fix trailing ELSE (UI structural label); do not rewrite IF / ELSE IF
+    if t_norm == "ELSE" or t_norm in ("其它", "其他"):
+        last["type"] = "ELSE"
+        last["conditions"] = []
+        last.setdefault("condition", "and")
+
 
 def normalize_work_flow(wf: dict[str, Any], *, keep_node_size: bool) -> dict[str, Any]:
     """Align AI JSON with UI-locked fields and drag-and-drop sizing."""
@@ -34,29 +77,28 @@ def normalize_work_flow(wf: dict[str, Any], *, keep_node_size: bool) -> dict[str
     for node in nodes:
         if not isinstance(node, dict):
             continue
+        nid = node.get("id")
+        ntype = node.get("type")
+        # Keep fixed ids/types consistent when present
+        if nid in FIXED_NODE_IDS and ntype and nid != ntype and nid in (
+            "base-node",
+            "start-node",
+            "knowledge-base-node",
+        ):
+            node["type"] = nid
         props = node.get("properties")
         if not isinstance(props, dict):
             continue
         if not keep_node_size:
             props.pop("height", None)
             props.pop("width", None)
-        if node.get("type") != "intent-node":
-            continue
         nd = props.get("node_data")
         if not isinstance(nd, dict):
             continue
-        branch = nd.get("branch")
-        if not isinstance(branch, list):
-            continue
-        others = [b for b in branch if isinstance(b, dict) and b.get("isOther")]
-        for b in others:
-            b["content"] = "其他"
-            b["isOther"] = True
-        if not others and branch:
-            last = branch[-1]
-            if isinstance(last, dict) and last.get("content") in ("其他", "其它", "other", "Other"):
-                last["isOther"] = True
-                last["content"] = "其他"
+        if ntype == "intent-node":
+            _normalize_intent(nd)
+        elif ntype == "condition-node":
+            _normalize_condition(nd)
     return wf
 
 

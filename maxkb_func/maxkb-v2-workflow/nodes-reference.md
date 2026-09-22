@@ -1,8 +1,10 @@
 # Workflow Nodes Reference
 
-`type` 字符串与 `ui/src/enums/application.ts` / `nodes/*/index.ts` 一致。业务参数在 `properties.node_data`。
+业务参数在 `properties.node_data`。编排前先读 **[ui-constraints.md](ui-constraints.md)**（固定节点、界面禁用项、结束节点、必有配置）。
 
 ## 固定基础节点
+
+`base-node` / `start-node` 的 **id 不可改、不可删**（见界面约束）。
 
 ### base-node
 
@@ -174,7 +176,7 @@
 
 - 基本信息需开启对应上传（`file_upload_setting.image` / `video`），开始节点才会有 `image` / `video` 字段可引用。  
 - 纯文本问答保持 `vision: false`（或不写）；需要看图/看视频时再开，不必改成 `image-understand-node`（后者仍可用于「只做理解、不当主对话」的场景）。  
-- 源码：`ui/.../ai-chat-node/index.vue`（开关）；`ai_chat_step_node/.../base_chat_node.py`（`is_vision` + `_process_images/_process_videos`）。
+- 视觉开关与 `image_list` / `video_list` 成对出现；界面约束见 [ui-constraints.md](ui-constraints.md)。
 
 ### search-knowledge-node 默认检索
 
@@ -220,7 +222,16 @@
 
 **坑**：`is_null` / `is_not_null` / `is_true` / `is_not_true` 不需要用户填写比较值，但序列化仍要求 `value` **非空**；官方 UI 固定写 `"value": 1`。写成 `""` 会报 `该字段不能为空`。检索短路常见写法：字段用 `is_hit_handling_method_list` + `is_not_null` + `value: 1`。
 
-**条件节点 `type: "ELSE"`**：兜底分支类型名固定为 `ELSE`，不要改成别的文案；条件列表保持 `[]`。
+**条件节点末条 `ELSE`（界面结构标签，禁止改）**：
+
+| 规则 | 说明 |
+|------|------|
+| 末条 `type` 必须是 `"ELSE"` | 不要改成「否则」「default」等；界面 IF/ELSE 文案由结构决定，不可当可编辑文案改 |
+| `conditions` 必须为 `[]` | ELSE 无比较条件 |
+| 至少 IF + ELSE | 可增删中间 `ELSE IF`；勿删掉唯一 ELSE |
+| 边锚点 | ELSE 的 `id` 稳定后不要乱换 |
+
+完整约束见 [ui-constraints.md](ui-constraints.md)。保存脚本会纠正末条 ELSE 的空条件。
 
 ### intent-node（意图识别）
 
@@ -239,45 +250,45 @@
 
 出口边：`sourceAnchorId = "{nodeId}_{branchId}_right"`（与 condition 相同）。
 
-#### 「其他」分支（前台只读 → AI 禁止改）
+#### 「其他」分支（界面禁用 → 禁止改）
 
-源码：`intent-classify-node/index.vue` 对 `item.isOther` 的输入框 **`:disabled="true"`**，且不可删除；运行时用 **`isOther: true`** 找兜底（`find_other_branch`），不是靠文案匹配。
+界面上该条输入框为禁用且不可删除；运行时靠 `isOther: true` 识别兜底，不靠文案匹配。
 
 | 规则 | 说明 |
 |------|------|
 | 必须有且仅有一条 `isOther: true` | 放在 `branch` **末尾** |
-| `content` 固定为 **`其他`** | 与 UI `t('common.other')` 一致；**禁止**改成「别的」「unknown」「default」等 |
+| `content` 固定为 **`其他`** | **禁止**改成「别的」「unknown」「default」等 |
 | **禁止**改 `isOther` 标志 | 不要把普通意图标成 other，也不要去掉 other |
 | 只改普通意图 | 仅编辑 `isOther: false` 的 `content` / 增删普通分支 |
-| 边锚点 | other 分支的 `id` 稳定后不要乱换，否则已接的异常/兜底边会断 |
+| 边锚点 | other 分支的 `id` 稳定后不要乱换，否则已接的兜底边会断 |
 
-若 AI 改写了「其他」文案：前台仍 disabled，用户**无法在界面改回**，只能靠脚本/再保存纠正。
+改错后用户无法在界面改回。完整约束见 [ui-constraints.md](ui-constraints.md)。
 
 ### 前台不可编辑字段（通用）
 
-编排 / 改写 `work_flow` 时：**界面 disabled / 系统固定的字段，AI 不得改其展示文案或标志位**。已知：
+编排 / 改写 `work_flow` 时：**界面 disabled / 系统固定的字段，不得改其展示文案或标志位**。已知：
 
 | 节点 | 固定项 |
 |------|--------|
 | `intent-node` | `isOther: true` 那条的 `content`（「其他」）与标志 |
-| `condition-node` | 末尾 `type: "ELSE"`（类型名与空 conditions） |
+| `condition-node` | 末尾 `type: "ELSE"`（类型名与空 conditions）；IF/ELSE 标签由结构决定 |
+| 固定基础节点 | `base-node` / `start-node`（及知识库 `knowledge-base-node`）的 id |
 | 异常输出 | `exception_message` 为运行时字段，不是让你在 node_data 里预填 |
 
-原则：**能拖拽出来的默认可改；灰掉的 / 系统兜底的只保持原样。**
+原则：**能拖拽出来的默认可改；灰掉的 / 系统兜底的只保持原样。** 详见 [ui-constraints.md](ui-constraints.md)。
 
 ### 节点宽高（与画布拖拽一致）
 
-用户从左侧拖节点时，初始尺寸来自 `ui/.../workflow/common/data.ts`（多数约 **height 252～260**，默认 **width 340**）。打开节点后，LogicFlow 按内容测量并 `setHeight(内容高 + 100)`，写入 `properties.height`（见 `app-node.ts`）。
+用户从左侧拖节点时，初始高度多约 **252～260**，默认宽约 **340**；打开后按内容自动测量。
 
 | 做法 | 结果 |
 |------|------|
 | **生成/保存时省略 `properties.height` / `width`**（推荐） | 打开画布后按内容自动量，与手拖接近 |
-| 抄调试导出的很大 `height`（如 700+）或不写 width 却乱写 height | 画布上块异常偏大/偏小，和用户手拖不一致 |
-| 需要占位时 | 可用表：intent/多数业务节点 height≈260、width 可省略（默认 340）；**不要**把导出快照当标准 |
+| 抄调试导出的很大 `height`（如 700+） | 画布上块异常偏大 |
 
-`branch_condition_list[].height` 是**分支锚点相对偏移**（新增常见 12），**不是**整节点高度，禁止当成节点 `properties.height`。
+`branch_condition_list[].height` 是**分支锚点相对偏移**（新增常见 12），**不是**整节点高度。
 
-拓扑样本里的「坐标可忽略」同样适用于：**宽高可省略，勿为「好看」臆造。**
+拓扑样本「坐标可忽略」同样适用于：**宽高可省略。**
 
 ### tool-node（工作流内自定义代码）
 

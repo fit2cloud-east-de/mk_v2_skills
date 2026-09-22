@@ -284,6 +284,7 @@ Python 事宜谈妥后，用下面文案询问（可按 MK_AUDIENCE 改写措辞
 | 意图 | 打开 |
 |------|------|
 | 工作流 / 调试 / 发布 | [maxkb_func/maxkb-v2-workflow/SKILL.md](maxkb_func/maxkb-v2-workflow/SKILL.md) |
+| 工作流界面约束 | [maxkb_func/maxkb-v2-workflow/ui-constraints.md](maxkb_func/maxkb-v2-workflow/ui-constraints.md) |
 | **智能体拓扑少样本（串行/并行/ReAct/…）** | [maxkb_func/maxkb-v2-workflow/topology-samples/README.md](maxkb_func/maxkb-v2-workflow/topology-samples/README.md) |
 | 知识库 | [maxkb_func/maxkb-v2-knowledge/SKILL.md](maxkb_func/maxkb-v2-knowledge/SKILL.md) |
 | 工具与沙箱 | [maxkb_func/maxkb-v2-tools/SKILL.md](maxkb_func/maxkb-v2-tools/SKILL.md) |
@@ -301,6 +302,7 @@ Python 事宜谈妥后，用下面文案询问（可按 MK_AUDIENCE 改写措辞
 4. **写操作**：人工确认 + `--yes`；见 [maxkb_func/AUTH_AND_SAFETY.md](maxkb_func/AUTH_AND_SAFETY.md)。  
 5. **删除资源**：默认禁止通过 API/脚本删除任何资源（应用、知识库、文档、工具、Key 等）。**仅当用户明确要求删除**，并经「确认删除」二次确认 + `--yes` 后才可执行；禁止测试后顺手清理、禁止隐式删除。详见 AUTH §4。  
 6. **AI 节点提示词**：凡 `ai-chat-node` 等大模型节点，落地提示词必须完整包含 **Role / 限制 / 输出 / 示例**；禁止空泛「你是助手」。见 [maxkb_func/maxkb-v2-workflow/nodes-reference.md](maxkb_func/maxkb-v2-workflow/nodes-reference.md)。  
+7. **界面固定项**：意图「其他」、条件 `ELSE`、固定节点 id、宽高等按 [ui-constraints.md](maxkb_func/maxkb-v2-workflow/ui-constraints.md) 保持原样，禁止改灰掉的文案。
 7. **规划产物**：可写规格与 tasks，勿写真实密钥。  
 8. **头脑风暴获批后**：进入 `maxkb_func` 落地；不要改写 `superpowers-6.1.1/` 下的文件来「适配」本套件。  
 9. **superpowers 默认关闭**：`MK_BRAINSTORM` 默认 `off`；未显式选 A（或未事后指定开启）时，**禁止扫描/读取** `superpowers-6.1.1/`；路径未表态时按 **B 直接制作**。

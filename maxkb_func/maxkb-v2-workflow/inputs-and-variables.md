@@ -187,4 +187,4 @@
 - [ ] 要传文件 → `file_upload_enable` + 类型开关；下游用 `{{开始.document|image|...}}`
 - [ ] 看图/视频对话 → 上传开 image/video + AI 节点 `vision`
 
-源码锚点：`start-node/index.vue`（刷 global/chat/文件字段）；`base_start_node.py`（合并 form_data）；`variable_assign_node`（写 chat/global）。
+内置 `question` / `time` / `history_context` 等勿当用户字段删改；自定义只动 `user_input` / `api_input` / `chat_input` 声明。详见 [ui-constraints.md](ui-constraints.md)。
