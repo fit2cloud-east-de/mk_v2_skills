@@ -248,7 +248,24 @@
 }
 ```
 
-出口边：`sourceAnchorId = "{nodeId}_{branchId}_right"`（与 condition 相同）。
+**同级必写**（写在 `properties` 上，与 `node_data` 平级，不是写进 `node_data`）：
+
+```json
+"branch_condition_list": [
+  { "id": "intent-a", "index": 0, "height": 12 },
+  { "id": "intent-b", "index": 1, "height": 12 },
+  { "id": "intent-other", "index": 2, "height": 12 }
+]
+```
+
+| 规则 | 说明 |
+|------|------|
+| `branch_condition_list` **必填** | id 必须与 `branch[].id` **一一对应**；缺了则分类旁**没有「+」锚点**，连线会飞到空白处 |
+| 禁止 `{nodeId}_right` | 意图节点**没有**通用右锚点；出口只能是 `{nodeId}_{branchId}_right` |
+| `properties.height` | 多意图时按分支数给合理高度（约 `400 + 分支数×42 + 200`）；勿省略成默认矮高，否则「+」错位 |
+| 边 | `pointsList` 置 `[]`；不要抄导出的弯曲控制点 |
+
+出口边：`sourceAnchorId = "{nodeId}_{branchId}_right"`（与 condition 相同）。`save_workflow.py` 会自动补齐 `branch_condition_list` 与意图/条件节点高度。
 
 #### 「其他」分支（界面禁用 → 禁止改）
 
@@ -279,14 +296,13 @@
 
 ### 节点宽高（与画布拖拽一致）
 
-用户从左侧拖节点时，初始高度多约 **252～260**，默认宽约 **340**；打开后按内容自动测量。
-
-| 做法 | 结果 |
+| 节点 | 做法 |
 |------|------|
-| **生成/保存时省略 `properties.height` / `width`**（推荐） | 打开画布后按内容自动量，与手拖接近 |
-| 抄调试导出的很大 `height`（如 700+） | 画布上块异常偏大 |
+| **intent / condition** | **必须**写合理 `properties.height`（并带齐 `branch_condition_list`）；保存脚本会按分支数自动补 |
+| **其它业务节点** | **优先省略** `height` / `width`，打开后按内容自动量 |
+| 禁止 | 抄调试导出的超大 height；把 `branch_condition_list[].height` 当成整节点高 |
 
-`branch_condition_list[].height` 是**分支锚点相对偏移**（新增常见 12），**不是**整节点高度。
+用户从左侧拖节点时，初始高度多约 **252～260**，默认宽约 **340**。`branch_condition_list[].height` 是**分支锚点行高**（意图常见 12），**不是**整节点高度。
 
 拓扑样本「坐标可忽略」同样适用于：**宽高可省略。**
 

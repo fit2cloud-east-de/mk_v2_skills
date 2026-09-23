@@ -23,10 +23,11 @@
 |------|----------|----------|
 | **意图识别** `intent-node` | 末条 `isOther: true`，`content` 必须是 **`其他`**；不可删该条 | 仅增删/改写 `isOther: false` 的意图文案；`model_id`、输入引用、历史轮次 |
 | **条件分支** `condition-node` | 末条 `type: "ELSE"`，`conditions: []`；IF/ELSE IF/ELSE **标签由结构决定**，不是可改文案 | IF / ELSE IF 的条件字段、比较符、值；分支条数（至少 IF+ELSE） |
+| **分支锚点表** | `properties.branch_condition_list` 必须与 `branch[].id` 同步（缺则无「+」、线乱跑） | 保存脚本可自动补；`height` 行高意图常用 12 |
 | **开始节点内置字段** | `question`；全局内置 `time` / `history_context` / `chat_id` / `chat_user_*` 等 | 用户输入/接口传参/会话变量声明后映射到 global/chat；上传开关打开后的 document/image… |
 | **异常信息** | `exception_message` 仅运行时产出 | 只可在下游模板引用，勿在 `node_data` 预填 |
-| **节点宽高** | 画布会按内容自动量 | **省略** `properties.height` / `width`；勿抄超大导出值 |
-| **分支锚点高度** | `branch_condition_list[].height` 为锚点偏移（常见 12） | 勿当成整节点 height |
+| **节点宽高** | 意图/条件须按分支数写合理 `height`；其它节点可省略由画布测量 | 勿抄超大导出值；勿漏 `branch_condition_list` |
+| **分支锚点高度** | `branch_condition_list[].height` 为**行**高（常见 12） | 勿当成整节点 height |
 
 ### 意图「其他」（高频踩坑）
 
@@ -108,9 +109,11 @@ tool-base-node + tool-start-node → 执行链
 | 边类型 | sourceAnchorId |
 |--------|-----------------|
 | 普通 | `{nodeId}_right` |
-| 条件 / 意图分支 | `{nodeId}_{branchId}_right` |
+| 条件 / 意图分支 | `{nodeId}_{branchId}_right`（**禁止**意图/条件用无 branchId 的 `{nodeId}_right`） |
 | 异常 | `{nodeId}_exception_right`（须先 `enableException: true`） |
 | 目标 | `{targetId}_left` |
+
+意图/条件还须有 `properties.branch_condition_list`（与 `branch[].id` 对齐），否则分类旁无「+」、已有边找不到锚点会飞线。
 
 汇合：下游 `properties.condition` 为 `AND`（全到齐）或 `OR`（任一即可）。
 
@@ -132,9 +135,10 @@ tool-base-node + tool-start-node → 执行链
 
 - [ ] 固定节点还在、id 未改  
 - [ ] 意图末条为 `其他` + `isOther: true`；条件末条为 `ELSE` + 空 conditions  
+- [ ] 意图/条件已写 `branch_condition_list`（id 与 branch 一致），出口边带 `branchId`  
 - [ ] 叶节点对用户有输出时 `is_result: true`；条件/意图/检索后还有 AI 或回复  
 - [ ] 知识库图：有数据源、分支到写入  
-- [ ] 未写 `properties.height/width`（或已用保存脚本剥离）  
+- [ ] 意图/条件有合理 height；其它节点未乱写超大 height/width  
 - [ ] AI 提示词四段齐全；引用用 `{{步骤名.字段}}`  
 
 相关：[nodes-reference.md](nodes-reference.md) · [inputs-and-variables.md](inputs-and-variables.md) · [exception-handling.md](exception-handling.md)

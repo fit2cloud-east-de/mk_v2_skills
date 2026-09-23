@@ -34,7 +34,10 @@ Python **3.11+**。套件根：[../../SKILL.md](../../SKILL.md)。执行层连�
 
 ## 节点宽高（强制）
 
-保存工作流时 **优先省略** `properties.height` / `properties.width`，让画布按内容自动测量（与用户拖拽一致）。禁止抄调试导出的超大 height。默认宽约 340；intent 等占位高约 260。详见 [ui-constraints.md](ui-constraints.md) / [nodes-reference.md](nodes-reference.md)「节点宽高」。
+- **意图 / 条件节点**：必须带与 `branch` 同步的 `branch_condition_list`，并写合理 `properties.height`（保存脚本会按分支数自动补）。缺锚点表 → 分类旁无「+」、连线错乱。  
+- **其它节点**：优先省略 `height` / `width`。禁止抄导出超大 height。  
+
+详见 [ui-constraints.md](ui-constraints.md) / [nodes-reference.md](nodes-reference.md)。
 
 ## 异常处理（强制意识）
 
