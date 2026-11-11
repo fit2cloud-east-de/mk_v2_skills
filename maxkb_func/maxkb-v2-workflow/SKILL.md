@@ -41,7 +41,17 @@ Python **3.11+**。套件根：[../../SKILL.md](../../SKILL.md)。执行层连�
 
 ## 异常处理（强制意识）
 
-易失败节点（尤其 `ai-chat-node`、多模态、外部工具）应评估是否开启 **`enableException`**，并单独拉 **`{id}_exception_right`** 边到兜底（指定回复 / AI 润色 / 工单函数等）。下游用 `{{节点名.exception_message}}` 取报错细节。规范与 JSON 形状见 [exception-handling.md](exception-handling.md)。未开异常则节点 `status=500` 会中断整条工作流。
+**只有 4 类节点能开**：`ai-chat-node`、`image-understand-node`、`image-generate-node`、`video-understand-node`。这 4 类里易失败的可评估开启 **`enableException`**，并单独拉 **`{id}_exception_right`** 边到兜底（指定回复 / AI 润色 / 工单函数等），下游用 `{{节点名.exception_message}}` 取报错细节。
+
+**工具节点（`tool-node` / `tool-lib-node`）、子应用等禁止写 `enableException`**：界面无开关，会多出橙色锚点与「异常信息」输出却关不掉（Issue #2）；`exception_message` 也不要手写进 `config.fields`。保存脚本不清理这类写法，**须在拼 JSON 时就把住**。规范与 JSON 形状见 [exception-handling.md](exception-handling.md)。未开异常则节点 `status=500` 会中断整条工作流。
+
+### 拼 JSON 前自检（Issue #2 回归项）
+
+调 `save_workflow.py` 之前逐个节点过一遍，任一不满足就先改 JSON：
+
+- 异常开关只出现在白名单 4 类节点；工具 / 子应用 / 检索 / 条件 / 回复等一律不带 `enableException`
+- 没有任何节点的 `config.fields` 里含 `exception_message`
+- 每条 `_exception_right` 边的源节点都是白名单类型，且该节点确实开了开关（否则是断头线）
 
 
 ## 智能体拓扑少样本（选型）

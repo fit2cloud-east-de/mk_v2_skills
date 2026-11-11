@@ -15,7 +15,7 @@ description: >-
 **解释器**：一律使用套件根 §0.1 已与用户确认的 `MK_PYTHON` / `MK_PIP`（或由其创建的 `.venv311`）。  
 **表述**：遵循套件根 §0.0 `MK_AUDIENCE`（小白通俗 / 专业技术）。  
 **AI 节点**：编排工作流时提示词须含 Role / 限制 / 输出 / 示例，见 [maxkb-v2-workflow/nodes-reference.md](maxkb-v2-workflow/nodes-reference.md)。  
-**异常处理**：易失败节点应评估 `enableException` + `_exception_right` 兜底边，见 [maxkb-v2-workflow/exception-handling.md](maxkb-v2-workflow/exception-handling.md)。  
+**异常处理**：仅 `ai-chat-node` / 图像理解 / 图像生成 / 视频理解 4 类可开 `enableException` + `_exception_right` 兜底边；工具节点、子应用等**禁止**写（界面无开关，关不掉），见 [maxkb-v2-workflow/exception-handling.md](maxkb-v2-workflow/exception-handling.md)。  
 **superpowers**：仅当套件根 `MK_BRAINSTORM=on` 时才涉及；本层落地时默认不读 `../superpowers-6.1.1/`。
 
 ## 0. 进入本层前：模式 + Python + 路径 + 连接

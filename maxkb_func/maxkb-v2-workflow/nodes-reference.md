@@ -290,7 +290,7 @@
 | `intent-node` | `isOther: true` 那条的 `content`（「其他」）与标志 |
 | `condition-node` | 末尾 `type: "ELSE"`（类型名与空 conditions）；IF/ELSE 标签由结构决定 |
 | 固定基础节点 | `base-node` / `start-node`（及知识库 `knowledge-base-node`）的 id |
-| 异常输出 | `exception_message` 为运行时字段，不是让你在 node_data 里预填 |
+| 异常开关 / 异常输出 | 仅 `ai-chat-node` / `image-understand-node` / `image-generate-node` / `video-understand-node` 可开 `enableException`；`exception_message` 由开关派生，禁止手写进 `config.fields` 或 `node_data` |
 
 原则：**能拖拽出来的默认可改；灰掉的 / 系统兜底的只保持原样。** 详见 [ui-constraints.md](ui-constraints.md)。
 
@@ -504,6 +504,6 @@ MinerU 等商店模板：本质是数据源 → **工具节点** → 分段 → 
 ### 异常分支（摘要）
 
 - 节点 `properties.enableException = true` → 失败时写入 `exception_message`，只走异常边，不中断整图（相对「未开则整条失败」）。  
-- UI 默认可开开关：`ai-chat-node`、图像理解/生成、视频理解；后端任意节点写 JSON 亦可。  
+- **只有 4 类节点能开**：`ai-chat-node`、`image-understand-node`、`image-generate-node`、`video-understand-node`。工具节点（`tool-node` / `tool-lib-node`）、子应用等**界面无开关**，写 `enableException` 会多出橙色锚点 + 「异常信息」输出却无法在界面关闭（Issue #2），**禁止**。  
 - 下游引用：`{{步骤名.exception_message}}`；可接 `reply-node` / 再 AI / `tool-lib-node`（工单等）。  
 - **完整规范**：[exception-handling.md](exception-handling.md)。

@@ -1,6 +1,6 @@
 # 工作流异常处理规范
 
-对照 MaxKB **2.10.3-lts**。编排智能体时，节点除了**正常右出线**，还可开**异常分支**，把报错细节交给下游（指定回复 / AI / 工具·工单函数等），而不是整条流程直接挂掉。
+对照 MaxKB **2.10.3-lts**。编排智能体时，节点除了**正常右出线**，还可开**异常分支**（仅 §2 白名单的 4 类节点），把报错细节交给下游（指定回复 / AI / 工具·工单函数等），而不是整条流程直接挂掉。
 
 ---
 
@@ -17,15 +17,31 @@
 
 ---
 
-## 2. 界面哪些节点能开「异常」
+## 2. 哪些节点能开「异常」（白名单，只有 4 类）
 
-界面默认在「输出参数」旁展示异常开关的类型：
+界面在「输出参数」右侧渲染异常开关，白名单来自 `NodeContainer.vue` 的 `exceptionNodeList`（2.10.3 / 2.10.6 一致，全项目无节点覆盖该默认值）：
 
-- `ai-chat-node`（AI 对话）
-- `image-understand-node` / `image-generate-node`
-- `video-understand-node`
+| 能开（仅这 4 类） | 不能开（写了也关不掉） |
+|-------------------|------------------------|
+| `ai-chat-node`（AI 对话） | `tool-node`（工作流内自定义代码 / 函数工具） |
+| `image-understand-node`（图像理解） | `tool-lib-node`（工具库）/ `tool-workflow-lib-node` |
+| `image-generate-node`（图像生成） | `application-node`（子应用） |
+| `video-understand-node`（视频理解） | `search-knowledge-node`、`condition-node`、`reply-node`、`loop-node`、`knowledge-write-node`、`form-node` 等其余全部节点 |
 
-任意节点只要 JSON 写了 `enableException: true` 且接了 `_exception_right` 边，失败时同样走异常分支。工具 / 子应用等若界面无开关，可用脚本写入；接边 source 必须是 `{id}_exception_right`。
+### 给「不能开」的节点写 `enableException` 会发生什么（Issue #2）
+
+前端只有 `properties.enableException` 为真时才**画**橙色 `{id}_exception_right` 锚点和「异常信息」输出项，但面板里的**开关本身受白名单限制**（`v-if="exceptionNodeList.includes(type)"`）。于是界面出现无法收拾的状态：
+
+| 现象 | 说明 |
+|------|------|
+| 画布多一个橙色锚点，还能拉线 | 与用户手动拖出来的同类节点不一致 |
+| 输出参数多出「异常信息 `exception_message`」 | **可被下游引用**，像是节点真有这个输出 |
+| **复制该节点，异常参数跟着复制** | 因为存在 `properties` 里，不是渲染态 |
+| **界面无法关闭** | 该类节点没有开关可点，只能删节点重建或改 JSON |
+
+因此：**白名单外禁止写 `enableException`**。同理，`exception_message` 一律不要手写进 `properties.config.fields`——它是开关的派生字段，手写会造成重复/幽灵输出项，且复制节点时被带走。
+
+**脚本不替你兜底**：`save_workflow.py` 只处理分支锚点、height、`pointsList`，**不会**清理 `enableException` 或 `exception_message`。所以这类错误必须在**生成 / 保存前自检**：逐节点确认异常开关只落在白名单 4 类上，`config.fields` 里没有 `exception_message`，改了再调保存脚本。
 
 ---
 
@@ -135,8 +151,9 @@
 
 ## 6. 验收清单
 
-- [ ] 易失败节点已 `enableException: true`
+- [ ] 易失败节点已 `enableException: true`，且节点类型在 §2 白名单内（工具 / 子应用不在此列）
 - [ ] 存在 `_exception_right` → 兜底节点的边
+- [ ] 没有任何节点把 `exception_message` 手写进 `config.fields`
 - [ ] 兜底能读到 `{{…exception_message}}`（或工具入参已传入）
 - [ ] 故意制造失败（错模型 / 工具抛错）时：用户仍收到兜底回复，且调试详情里该节点 `status=500`、下游兜底为成功
 - [ ] 正常路径不被异常边误执行

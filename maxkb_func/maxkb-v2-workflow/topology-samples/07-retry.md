@@ -22,7 +22,7 @@
 
 ## MaxKB 落地要点
 
-condition 判成功 + loop 限次；也可用异常分支 `enableException`（见 [../exception-handling.md](../exception-handling.md)）。务必设最大次数。
+condition 判成功 + loop 限次；也可用异常分支 `enableException`（仅 `ai-chat-node` / 图像理解 / 图像生成 / 视频理解 4 类可开，见 [../exception-handling.md](../exception-handling.md)）。务必设最大次数。
 
 ## 拓扑 JSON（供 AI / 脚本读取）
 

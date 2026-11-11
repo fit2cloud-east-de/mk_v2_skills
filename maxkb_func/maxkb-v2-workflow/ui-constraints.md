@@ -25,7 +25,8 @@
 | **条件分支** `condition-node` | 末条 `type: "ELSE"`，`conditions: []`；IF/ELSE IF/ELSE **标签由结构决定**，不是可改文案 | IF / ELSE IF 的条件字段、比较符、值；分支条数（至少 IF+ELSE） |
 | **分支锚点表** | `properties.branch_condition_list` 必须与 `branch[].id` 同步（缺则无「+」、线乱跑） | 保存脚本可自动补；`height` 行高意图常用 12 |
 | **开始节点内置字段** | `question`；全局内置 `time` / `history_context` / `chat_id` / `chat_user_*` 等 | 用户输入/接口传参/会话变量声明后映射到 global/chat；上传开关打开后的 document/image… |
-| **异常信息** | `exception_message` 仅运行时产出 | 只可在下游模板引用，勿在 `node_data` 预填 |
+| **异常开关** | 只有 `ai-chat-node` / `image-understand-node` / `image-generate-node` / `video-understand-node` 有开关（`exceptionNodeList`） | 白名单外**禁止**写 `enableException`：会多出橙色锚点 + 「异常信息」输出且界面关不掉，复制节点还带走 |
+| **异常信息** | `exception_message` 由异常开关派生，仅运行时产出 | 只可在下游模板引用；**禁止**手写进 `config.fields` / `node_data` |
 | **节点宽高** | 意图/条件须按分支数写合理 `height`；其它节点可省略由画布测量 | 勿抄超大导出值；勿漏 `branch_condition_list` |
 | **分支锚点高度** | `branch_condition_list[].height` 为**行**高（常见 12） | 勿当成整节点 height |
 
@@ -110,7 +111,7 @@ tool-base-node + tool-start-node → 执行链
 |--------|-----------------|
 | 普通 | `{nodeId}_right` |
 | 条件 / 意图分支 | `{nodeId}_{branchId}_right`（**禁止**意图/条件用无 branchId 的 `{nodeId}_right`） |
-| 异常 | `{nodeId}_exception_right`（须先 `enableException: true`） |
+| 异常 | `{nodeId}_exception_right`（须先 `enableException: true`，**且节点类型在白名单内**） |
 | 目标 | `{targetId}_left` |
 
 意图/条件还须有 `properties.branch_condition_list`（与 `branch[].id` 对齐），否则分类旁无「+」、已有边找不到锚点会飞线。
@@ -126,7 +127,7 @@ tool-base-node + tool-start-node → 执行链
 | 自由节点的 `stepName`（保持唯一、提示词用中文名） | 固定节点 id/`type` |
 | `node_data` 业务字段（模型、提示词、知识库 id、工具入参…） | 意图「其他」、条件 `ELSE` 结构标签 |
 | 自由节点之间的边 | 删掉唯一数据源 / 唯一写入（知识库图） |
-| `is_result`、异常开关与兜底边 | 臆造 `exception_message`；乱写超大 height/width |
+| `is_result`、白名单节点的异常开关与兜底边 | 给工具/子应用等非白名单节点写 `enableException`；臆造 `exception_message`；乱写超大 height/width |
 | 用户输入 / 接口 / 会话变量声明 | 与内置 global 字段抢同名冲突 |
 
 ---
@@ -140,5 +141,6 @@ tool-base-node + tool-start-node → 执行链
 - [ ] 知识库图：有数据源、分支到写入  
 - [ ] 意图/条件有合理 height；其它节点未乱写超大 height/width  
 - [ ] AI 提示词四段齐全；引用用 `{{步骤名.字段}}`  
+- [ ] 异常开关只出现在白名单 4 类节点；`config.fields` 里没有手写的 `exception_message`  
 
 相关：[nodes-reference.md](nodes-reference.md) · [inputs-and-variables.md](inputs-and-variables.md) · [exception-handling.md](exception-handling.md)
